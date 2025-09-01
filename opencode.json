@@ -1,0 +1,140 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "filesystem": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/minasaleeb/workspaces"
+      ]
+    },
+    "context7": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
+    },
+    "playwright": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "-y",
+        "@playwright/mcp@latest"
+      ],
+      "environment": {}
+    },
+    "stagehand": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bun",
+        "/Users/minasaleeb/workspaces/opensource/mcp-server-browserbase/stagehand/dist/index.js"
+      ],
+      "environment": {
+        "BROWSERBASE_API_KEY": "${BROWSERBASE_API_KEY}",
+        "BROWSERBASE_PROJECT_ID": "${BROWSERBASE_PROJECT_ID}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
+    },
+    "shadcn": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "-y",
+        "shadcn@latest",
+        "mcp"
+      ]
+    },
+    "taskmaster-ai": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "-y",
+        "--package=task-master-ai",
+        "task-master-ai"
+      ],
+      "environment": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "GOOGLE_API_KEY": "${GEMINI_API_KEY}",
+        "MISTRAL_API_KEY": "${MISTRAL_API_KEY}"
+      }
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "npm-search": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "-y",
+        "npm-search-mcp-server"
+      ]
+    },
+    "Deep Graph MCP": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "-y",
+        "mcp-code-graph@latest",
+        "davila7/claude-code-templates",
+        "Shopify/roast"
+      ]
+    },
+    "ai-dr-github-search": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bun",
+        "run",
+        "/Users/minasaleeb/workspaces/business/ai-doctore/packages/mcp-server-github-search/src/server.ts"
+      ],
+      "environment": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "ai-dr-gemini": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bun",
+        "run",
+        "/Users/minasaleeb/workspaces/business/ai-doctore/packages/mcp-server-gemini/src/server.ts"
+      ],
+      "environment": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      }
+    },
+    "browserbase": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/Users/minasaleeb/.bun/bin/bunx",
+        "@browserbasehq/mcp-server-browserbase"
+      ],
+      "environment": {
+        "BROWSERBASE_API_KEY": "${BROWSERBASE_API_KEY}",
+        "BROWSERBASE_PROJECT_ID": "${BROWSERBASE_PROJECT_ID}",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "GOOGLE_API_KEY": "${GEMINI_API_KEY}"
+      }
+    }
+  }
+}

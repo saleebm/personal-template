@@ -1,0 +1,115 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/minasaleeb/workspaces"
+      ]
+    },
+    "context7": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
+    },
+    "playwright": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ],
+      "env": {}
+    },
+    "stagehand": {
+      "command": "/Users/minasaleeb/.bun/bin/bun",
+      "args": [
+        "/Users/minasaleeb/workspaces/opensource/mcp-server-browserbase/stagehand/dist/index.js"
+      ],
+      "env": {
+        "BROWSERBASE_API_KEY": "${BROWSERBASE_API_KEY}",
+        "BROWSERBASE_PROJECT_ID": "${BROWSERBASE_PROJECT_ID}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
+    },
+    "shadcn": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "-y",
+        "shadcn@latest",
+        "mcp"
+      ]
+    },
+    "taskmaster-ai": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "-y",
+        "--package=task-master-ai",
+        "task-master-ai"
+      ],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "GOOGLE_API_KEY": "${GEMINI_API_KEY}",
+        "MISTRAL_API_KEY": "${MISTRAL_API_KEY}"
+      }
+    },
+    "sequential-thinking": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "npm-search": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "-y",
+        "npm-search-mcp-server"
+      ]
+    },
+    "Deep Graph MCP": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "-y",
+        "mcp-code-graph@latest",
+        "davila7/claude-code-templates",
+        "Shopify/roast"
+      ]
+    },
+    "ai-dr-github-search": {
+      "command": "/Users/minasaleeb/.bun/bin/bun",
+      "args": [
+        "run",
+        "/Users/minasaleeb/workspaces/business/ai-doctore/packages/mcp-server-github-search/src/server.ts"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "ai-dr-gemini": {
+      "command": "/Users/minasaleeb/.bun/bin/bun",
+      "args": [
+        "run",
+        "/Users/minasaleeb/workspaces/business/ai-doctore/packages/mcp-server-gemini/src/server.ts"
+      ],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      }
+    },
+    "browserbase": {
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
+      "args": [
+        "@browserbasehq/mcp-server-browserbase"
+      ],
+      "env": {
+        "BROWSERBASE_API_KEY": "${BROWSERBASE_API_KEY}",
+        "BROWSERBASE_PROJECT_ID": "${BROWSERBASE_PROJECT_ID}",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "GOOGLE_API_KEY": "${GEMINI_API_KEY}"
+      }
+    }
+  }
+}

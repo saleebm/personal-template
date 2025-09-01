@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated/client"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+// Logger model for server-side logging
+model LogEntry {
+  id      String   @id @default(cuid())
+  level   LogLevel
+  message String   @db.Text
+  data    Json?    @db.JsonB
+  stack   String?  @db.Text
+
+  // Context
+  source    String? // Component/module that generated the log
+  sessionId String? // Link to prompt session
+  userId    String? // User context
+
+  // Performance metrics
+  duration Int? // Operation duration in ms
+  memory   BigInt? // Memory usage in bytes
+
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([source])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("log_entries")
+}
+
+// ========================================
+// Enums
+// ========================================
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  FATAL
+}

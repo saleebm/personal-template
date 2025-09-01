@@ -1,0 +1,22 @@
+# Ruler Configuration File
+# See https://ai.intellectronica.net/ruler for documentation.
+
+default_agents = ["cursor", "claude", "gemini-cli", "opencode"]
+
+[gitignore]
+enabled = false
+
+[agents.claude]
+enabled = true
+output_path = "CLAUDE.md"
+
+[agents.opencode]
+enabled = true
+output_path = "AGENTS.md"
+
+[agents.cursor]
+enabled = true
+output_path = ".cursor/rules/ruler_cursor_instructions.mdc"
+
+[agents.gemini-cli]
+enabled = true

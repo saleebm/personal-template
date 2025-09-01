@@ -1,0 +1,41 @@
+{
+  "name": "@repo/logger",
+  "version": "1.0.0",
+  "description": "Server-side logging system with file rotation for AI Dr.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bunchee",
+    "dev": "bun run src/index.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "rotating-file-stream": "^3.2.5",
+    "chalk": "^5.6.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^22.12.0",
+    "bunchee": "^6.6.0",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "bun": "^1.0.0"
+  }
+}

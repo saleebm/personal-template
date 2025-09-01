@@ -1,0 +1,53 @@
+{
+  "name": "@repo/database",
+  "version": "1.0.0",
+  "description": "Database package with Prisma and pgvector support for AI Dr.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./client": {
+      "types": "./generated/client/index.d.ts",
+      "import": "./generated/client/index.js",
+      "require": "./generated/client/index.js"
+    }
+  },
+  "scripts": {
+    "build": "bunchee",
+    "dev": "bun run src/index.ts",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:reset": "prisma migrate reset",
+    "db:studio": "prisma studio",
+    "db:seed": "bun run src/seed.ts",
+    "db:format": "prisma format",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.2.0",
+    "zod": "^4.1.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "bunchee": "^6.6.0",
+    "prisma": "^6.2.0",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "bun": "^1.0.0"
+  }
+}

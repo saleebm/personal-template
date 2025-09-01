@@ -1,0 +1,43 @@
+{
+  "name": "ai-doctore",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "ruler:apply": "ruler apply",
+    "typecheck": "turbo typecheck",
+    "db:generate": "cd packages/database && bun run db:generate",
+    "db:push": "cd packages/database && bun run db:push",
+    "db:migrate:dev": "cd packages/database && bun run db:migrate:dev",
+    "db:migrate:deploy": "cd packages/database && bun run db:migrate:deploy",
+    "db:migrate:reset": "cd packages/database && bun run db:migrate:reset",
+    "db:studio": "cd packages/database && bun run db:studio",
+    "db:seed": "cd packages/database && bun run db:seed",
+    "db:format": "cd packages/database && bun run db:format"
+  },
+  "devDependencies": {
+    "@intellectronica/ruler": "^0.3.6",
+    "@types/bun": "1.2.21",
+    "@types/minimatch": "^6.0.0",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "minimatch": "^10.0.3",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.6",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "bun@1.2.21",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

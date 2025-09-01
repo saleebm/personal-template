@@ -1,0 +1,68 @@
+{
+  "permissions": {
+    "allow": [
+      "Agent",
+      "Bash(bun:*)",
+      "FileRead(*)",
+      "LS",
+      "Grep",
+      "Glob"
+    ],
+    "ask": [
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(curl:*)",
+      "Read(./.env)",
+      "Read(`**/*/.env.*)`",
+      "WebFetch"
+    ],
+    "additionalDirectories": [
+      "/Users/minasaleeb/workspaces/me/copt-dev-v1",
+      "/Users/minasaleeb/workspaces/me/lesswhelmed-me",
+      "/Users/minasaleeb/workspaces/business/ai-doctore",
+      "/Users/minasaleeb/workspaces/business/scratch/ai-dr"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "filesystem",
+    "context7",
+    "sequential-thinking",
+    "browserbase",
+    "playwright",
+    "npm-search",
+    "stagehand",
+    "shadcn"
+  ],
+  "disabledMcpjsonServers": [
+    "ai-dr-github-search",
+    "ai-dr-categorization",
+    "ai-dr-gemini",
+    "Deep Graph MCP",
+    "taskmaster-ai"
+  ],
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/minasaleeb/.claude/statusline-enhanced.sh"
+  },
+  "outputStyle": "AI Dr. Workflow Style",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/prompt-storage-hook.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

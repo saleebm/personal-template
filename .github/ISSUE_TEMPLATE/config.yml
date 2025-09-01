@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/[owner]/[repo-name]/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📚 Documentation
+    url: https://github.com/[owner]/[repo-name]/wiki
+    about: Check out our documentation and guides
+  # TODO: Add Discord Community
+  # - name: 💭 Discord Community
+  #   url: https://discord.gg/[discord-invite-code]
+  #   about: Join our Discord for real-time discussions
