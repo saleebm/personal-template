@@ -5,17 +5,17 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "~/workspaces"
+        "/Users/minasaleeb/workspaces"
       ]
     },
     "context7": {
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "-y",
         "@upstash/context7-mcp@latest"
       ]
@@ -24,7 +24,7 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "-y",
         "@playwright/mcp@latest"
       ],
@@ -34,8 +34,8 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bun",
-        "~/workspaces/opensource/mcp-server-browserbase/stagehand/dist/index.js"
+        "/Users/minasaleeb/.bun/bin/bun",
+        "/Users/minasaleeb/workspaces/opensource/mcp-server-browserbase/stagehand/dist/index.js"
       ],
       "environment": {
         "BROWSERBASE_API_KEY": "${BROWSERBASE_API_KEY}",
@@ -47,7 +47,7 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "-y",
         "shadcn@latest",
         "mcp"
@@ -57,7 +57,7 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "-y",
         "--package=task-master-ai",
         "task-master-ai"
@@ -73,7 +73,7 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "-y",
         "@modelcontextprotocol/server-sequential-thinking"
       ]
@@ -82,7 +82,7 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "-y",
         "npm-search-mcp-server"
       ]
@@ -91,7 +91,7 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "-y",
         "mcp-code-graph@latest",
         "davila7/claude-code-templates",
@@ -102,9 +102,9 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bun",
+        "/Users/minasaleeb/.bun/bin/bun",
         "run",
-        "~/workspaces/ai-doctore/packages/mcp-server-github-search/src/server.ts"
+        "/Users/minasaleeb/workspaces/ai-doctore/packages/mcp-server-github-search/src/server.ts"
       ],
       "environment": {
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
@@ -114,9 +114,9 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bun",
+        "/Users/minasaleeb/.bun/bin/bun",
         "run",
-        "~/workspaces/ai-doctore/packages/mcp-server-gemini/src/server.ts"
+        "/Users/minasaleeb/workspaces/ai-doctore/packages/mcp-server-gemini/src/server.ts"
       ],
       "environment": {
         "GEMINI_API_KEY": "${GEMINI_API_KEY}"
@@ -126,7 +126,7 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "~/.bun/bin/bunx",
+        "/Users/minasaleeb/.bun/bin/bunx",
         "@browserbasehq/mcp-server-browserbase"
       ],
       "environment": {

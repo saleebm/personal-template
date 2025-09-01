@@ -1,22 +1,14 @@
 {
   "mcpServers": {
-    "filesystem": {
-      "command": "~/.bun/bin/bunx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "~/workspaces"
-      ]
-    },
     "context7": {
-      "command": "~/.bun/bin/bunx",
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
       "args": [
         "-y",
         "@upstash/context7-mcp@latest"
       ]
     },
     "playwright": {
-      "command": "~/.bun/bin/bunx",
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
       "args": [
         "-y",
         "@playwright/mcp@latest"
@@ -24,9 +16,9 @@
       "env": {}
     },
     "stagehand": {
-      "command": "~/.bun/bin/bun",
+      "command": "/Users/minasaleeb/.bun/bin/bun",
       "args": [
-        "~/workspaces/opensource/mcp-server-browserbase/stagehand/dist/index.js"
+        "/Users/minasaleeb/workspaces/opensource/mcp-server-browserbase/stagehand/dist/index.js"
       ],
       "env": {
         "BROWSERBASE_API_KEY": "${BROWSERBASE_API_KEY}",
@@ -35,7 +27,7 @@
       }
     },
     "shadcn": {
-      "command": "~/.bun/bin/bunx",
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
       "args": [
         "-y",
         "shadcn@latest",
@@ -43,7 +35,7 @@
       ]
     },
     "taskmaster-ai": {
-      "command": "~/.bun/bin/bunx",
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
       "args": [
         "-y",
         "--package=task-master-ai",
@@ -57,21 +49,21 @@
       }
     },
     "sequential-thinking": {
-      "command": "~/.bun/bin/bunx",
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
       "args": [
         "-y",
         "@modelcontextprotocol/server-sequential-thinking"
       ]
     },
     "npm-search": {
-      "command": "~/.bun/bin/bunx",
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
       "args": [
         "-y",
         "npm-search-mcp-server"
       ]
     },
     "Deep Graph MCP": {
-      "command": "~/.bun/bin/bunx",
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
       "args": [
         "-y",
         "mcp-code-graph@latest",
@@ -79,28 +71,8 @@
         "Shopify/roast"
       ]
     },
-    "ai-dr-github-search": {
-      "command": "~/.bun/bin/bun",
-      "args": [
-        "run",
-        "~/workspaces/business/ai-doctore/packages/mcp-server-github-search/src/server.ts"
-      ],
-      "env": {
-        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
-      }
-    },
-    "ai-dr-gemini": {
-      "command": "~/.bun/bin/bun",
-      "args": [
-        "run",
-        "~/workspaces/business/ai-doctore/packages/mcp-server-gemini/src/server.ts"
-      ],
-      "env": {
-        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
-      }
-    },
     "browserbase": {
-      "command": "~/.bun/bin/bunx",
+      "command": "/Users/minasaleeb/.bun/bin/bunx",
       "args": [
         "@browserbasehq/mcp-server-browserbase"
       ],

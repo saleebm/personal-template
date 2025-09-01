@@ -124,27 +124,6 @@ If I ask for adjustments to code I have provided you, do not repeat all of my co
 - **ASK for clarification** when uncertain (paths, targets, scope)
 
 ---
-Source: .ruler/categorization.md
----
-# Categorization
-
-## System Overview
-- **Package**: `@lesswhelmed/categorization` with adaptive learning
-- **Features**: Dynamic category creation, intelligent deduplication, namespace separation
-- **Usage**: `CategoryEmbeddingService.processFindingCategory()` for URLs, `processImageCategory()` for images
-
-## Key Points
-- No hardcoded categories - allows organic growth
-- Uses embeddings to prevent duplicates
-- Hierarchical support (e.g., "technology/ai/machine-learning")
-
----
-
-**For complete categorization system details, architecture, and usage patterns, see [docs/categorization.md](docs/categorization.md)**
-
-*Read when: Working with categorization features, analyzing AI category logic, or debugging embedding issues*
-
----
 Source: .ruler/coding-style.md
 ---
 # Coding Standards
@@ -199,58 +178,37 @@ Source: .ruler/coding-style.md
 - Use appropriate cache invalidation strategies
 
 ---
-Source: .ruler/deployment.md
----
-# Deployment
-
-## Quick Commands
-- `./deploy.sh` - Full deployment script
-- `pm2 status` - Check application status
-- `pm2 logs lesswhelmed-me` - View logs
-
-## Process
-1. Build categorization package
-2. Install production dependencies  
-3. Run database migrations
-4. Compile application to `./bin/`
-5. Restart with PM2
-
----
-
-**For complete deployment process, PM2 configuration, and troubleshooting, see [docs/deployment.md](docs/deployment.md)**
-
-*Read when: Deploying to production, configuring PM2, or troubleshooting deployment issues*
-
----
 Source: .ruler/development-commands.md
 ---
 # Development Commands
 
 ## Development Commands
 
-- **Development**: `bun dev` - Starts both the API server and worker in watch mode
-- **Build**: `bun run build:prod` - Compiles to executable in `./bin/`
-- **Type Check**: `bun run typecheck` - Run TypeScript type checking
-- **Start Production**: `./bin/lesswhelmed-me` - Run the compiled executable
-- **Build Categorization Package**: `cd packages/categorization && bun run build` - Builds the @lesswhelmed/categorization package
+- **Development**: `bun dev` - Starts all apps in development mode
+- **Build**: `bun build` - Build all apps and packages
+- **Type Check**: `bun typecheck` - Run TypeScript type checking
+- **Lint**: `bun lint` - Run ESLint
+- **Format**: `bun format` - Format code with Prettier
 
 ## Testing Commands
 
 - **Run Tests**: `bun test` - Runs all tests using Bun's built-in test runner
 - **Watch Tests**: `bun test:watch` - Runs tests in watch mode for development
 - **Test Coverage**: `bun test:coverage` - Runs tests with coverage reporting
-- **Test Setup**: `bun run test:setup` - Sets up test database (requires TEST_DATABASE_URL)
 
 ## Database Commands
 
-- **Generate Prisma Client**: `bun run db:generate`
-- **Run Migrations (Dev)**: `bun run db:migrate-dev`
-- **Deploy Migrations**: `bun run db:migrate-deploy`
-- **Database Studio**: `bun run db:studio`
+- **Generate Prisma Client**: `bun db:generate`
+- **Push Schema**: `bun db:push` - Push schema changes to database (development)
+- **Run Migrations (Dev)**: `bun db:migrate:dev` - Create and apply migrations
+- **Deploy Migrations**: `bun db:migrate:deploy` - Apply migrations in production
+- **Database Studio**: `bun db:studio` - Open Prisma Studio
+- **Seed Database**: `bun db:seed` - Seed the database with sample data
+- **Format Schema**: `bun db:format` - Format Prisma schema file
 
 ## Migration Notes
 
-- When running migration script, always include the `--name` argument (e.g., `bun run db:migrate-dev --name added_job_title`)
+- When running migration script, always include the `--name` argument (e.g., `bun db:migrate:dev --name added_user_table`)
 - Omitting the `--name` argument can cause the migration script to hang
 - If the script appears unresponsive, ensure you've passed the required name argument
 
@@ -487,67 +445,6 @@ graph LR
 **Remember**: Documentation is code. Treat it with the same care, review it with the same rigor, and maintain it with the same discipline.
 
 ---
-Source: .ruler/environment.md
----
-# Environment
-
-## Required Variables
-```bash
-DATABASE_URL=postgresql://user:pass@localhost:5432/lesswhelmed
-REDIS_URL=redis://localhost:6379
-AUTH_HEADER=your-secure-api-key
-GEMINI_API_KEY=your-gemini-api-key
-GITHUB_TOKEN=your-github-token
-```
-
-## Setup
-1. Copy `.env.example` to `.env`
-2. Fill in required variables
-3. Create separate test database
-
----
-
-**For complete environment configuration, external services, and security requirements, see [docs/environment.md](docs/environment.md)**
-
-*Read when: Setting up development environment, configuring external services, or troubleshooting auth issues*
-
----
-Source: .ruler/master-agent-rule.md
----
-# Master Agent Rule
-
-## Documentation Management
-- **MUST follow** documentation rules in `.ruler/documentation-management.md`
-- **Always clean up** `/wip` directories after implementation
-- **Keep docs with code** - Package documentation stays in package directories
-- **Update immediately** - Documentation updates happen with code changes, not later
-
-## Rules
-- Before you do any work, MUST view files in .claude/tasks/context_session_x.md file to get the full context (x being the id of the session we are operate, if file doesnt exist, then create one)
-- context_session_x.md should contain most of context of what we did, overall plan, and sub agents will continusly add context to the file
-- After you finish the work, MUST update the .claude/tasks/context_session_x.md file to make sure others can get full context of what you did
-
-## Sub agents
-You have access to multiple specialized sub agents:
-
-### Available Agents:
-- **ai-dr-workflow-orchestrator**: Specialized agent for orchestrating AI Dr. workflow execution and task management. Focuses on making workflows work first, then adding features. Prioritizes functional execution over complex architecture.
-
-- **ai-dr-challenger**: Critical evaluation agent that challenges and validates workflow results, implementation quality, and architectural decisions. Seeks weaknesses and provides constructive critique.
-
-- **nextjs-ui-api-engineer**: Use for UI-first development with Next.js 15, React 19, and Tailwind CSS v4 integration. Specializes in creating beautiful, accessible, and performant UI components with modern styling patterns, container queries, 3D transforms, and enhanced gradients.
-
-- **principle-engineer**: Use PROACTIVELY for architecture reviews, system design, technical risk assessment, AI Dr. workflow integration, AI SDK v5 workflow builders, Zod v4 schema validation, and prompt enhancement optimization. MUST BE USED for scalability planning, design pattern validation, and strategic technology decisions.
-
-- **typescript-error-resolver**: Use when you need to fix TypeScript errors project-wide, organize type definitions, or ensure type safety across the codebase. This agent runs autonomously in the background until all type errors are resolved.
-
-### Usage Guidelines:
-- Sub agents will do research about the implementation, but you will do the actual implementation
-- When passing task to sub agent, make sure you pass the context file, e.g. '.claude/tasks/context_session_x.md' (x being the incremental generated id of the session we are operate, if file doesnt exist, then create one)
-- After each sub agent finishes the work, make sure you read the related documentation they created to get full context of the plan before you start executing
-- Choose the most appropriate agent based on the task type and domain expertise required
-
----
 Source: .ruler/project-architecture.md
 ---
 # Project Architecture
@@ -602,8 +499,7 @@ Source: .ruler/repository-navigation.md
 # Repository Navigation Guide
 
 **Version**: 1.0.0  
-**Date**: 2025-01-21  
-**Purpose**: Quick reference for navigating the AI Dr. codebase
+**Purpose**: Quick reference for navigating the monorepo codebase
 
 ## 🗺️ Quick Navigation Map
 
@@ -615,9 +511,8 @@ Source: .ruler/repository-navigation.md
 | **React Components** | `apps/web/components/` | `*.tsx` |
 | **Database Schema** | `packages/database/prisma/` | `schema.prisma` |
 | **Shared UI Components** | `packages/ui/src/` | `*.tsx` |
-| **MCP Servers** | `packages/mcp-server-*/` | `src/server.ts` |
 | **Configuration** | Root and package directories | `*.json`, `*.toml` |
-| **Documentation** | `docs/`, `architecture/`, `.ruler/` | `*.md` |
+| **Documentation** | `docs/`, `.ruler/` | `*.md` |
 | **Automation Scripts** | `scripts/` | `*.sh` |
 | **Types & Interfaces** | Package `src/` directories | `types.ts`, `*.types.ts` |
 | **Tests** | Alongside source files | `*.test.ts`, `*.spec.ts` |
@@ -629,7 +524,7 @@ Source: .ruler/repository-navigation.md
 #### Add a New API Endpoint
 1. **Location**: `apps/web/app/api/[your-endpoint]/route.ts`
 2. **Schema**: Define types in `packages/database/prisma/schema.prisma` if needed
-3. **Documentation**: Update `architecture/API_CONTRACTS.md`
+3. **Documentation**: Update relevant docs
 
 #### Create a New React Component
 1. **Shared Component**: `packages/ui/src/[component].tsx`
@@ -641,21 +536,6 @@ Source: .ruler/repository-navigation.md
 2. **Migration**: Run `bun db:migrate:dev`
 3. **Generate Client**: Run `bun db:generate`
 4. **Seed Data**: Add to `packages/database/src/seed.ts`
-
-#### Create an MCP Server
-1. **Location**: `packages/mcp-server-[name]/`
-2. **Structure**:
-   ```
-   packages/mcp-server-[name]/
-   ├── src/
-   │   └── server.ts
-   ├── package.json
-   ├── tsconfig.json
-   └── README.md
-   ```
-3. **Scripts**: Add to root `package.json`:
-   - `mcp:[name]`: Run the server
-   - `mcp:[name]:dev`: Development mode
 
 #### Add a New Package
 1. **Create**: `packages/[package-name]/`
@@ -669,7 +549,6 @@ Source: .ruler/repository-navigation.md
        └── index.ts
    ```
 3. **Register**: Add to workspace in root `package.json`
-4. **Documentation**: Update `docs/documentation-links.md` with urls (must be validated urls) for documentation links.
 
 ## 📁 Key Directories Explained
 
@@ -682,31 +561,20 @@ Source: .ruler/repository-navigation.md
 - **Purpose**: Shared, reusable code
 - **Key Packages**:
   - `database` - Prisma client and schema
-  - `auth` - Authentication logic
-  - `workflow-engine` - XState workflows
   - `ui` - Shared UI components
-  - `config-*` - Configuration packages
-
-### `/architecture`
-- **Purpose**: System-level documentation
-- **Key Files**:
-  - `SYSTEM_ARCHITECTURE.md` - Overall system design
-  - `API_CONTRACTS.md` - API documentation
-  - `CRITICAL_ANALYSIS.md` - Issues and recommendations
+  - `logger` - Logging utilities
+  - `eslint-config` - Shared ESLint configuration
+  - `typescript-config` - Shared TypeScript configuration
 
 ### `/docs`
 - **Purpose**: Technical documentation and guides
-- **Contents**: Library references, implementation guides
-- **Rules**:
-  - Use folders to separate documentation for different topics regarding detailed implementation, design, etc.
+- **Contents**: Project documentation, guides, references
 
 ### `/scripts`
 - **Purpose**: Automation and setup scripts
 - **Naming Convention**:
-  - `db-*.sh` - Database operations
-  - `docs-*.sh` - Documentation maintenance
   - `setup-*.sh` - Environment setup
-  - `start-mcp-*.sh` - MCP server launchers
+  - Other utility scripts as needed
 
 ---
 Source: .ruler/security.md
@@ -826,9 +694,16 @@ Source: .ruler/typescript.md
 
 - **Never create index barrel files** (index.ts, index.js) - use named exports instead
 - Always use direct imports with named exports
+- **ALWAYS use absolute imports** with workspace packages:
+  - ✅ `import { Button } from '@workspace/ui/components/button'`
+  - ❌ `import { Button } from '../button'`
+  - ❌ `import { Button } from './button'`
+- Within a package, always use full absolute paths:
+  - ✅ `import { cn } from '@workspace/ui/lib/utils'`
+  - ❌ `import { cn } from '../lib/utils'`
 - Prefer type imports for type-only imports:
 ```typescript
-import type { SomeType } from './types';
+import type { SomeType } from '@workspace/ui/types';
 ```
 
 ## Function Patterns
