@@ -36,4 +36,20 @@ npm-debug.log*
 *.pem
 
 .playwright-mcp/*
-!.playwright-mcp/.gitkeep
+!.playwright-mcp/.gitkeep# Environment files
+.env.production
+.env.development
+*.env
+!.env.example
+# Personal data
+.ai-dr/prompts/
+# Build outputs
+dist/
+build/
+bin/
+.turbo/
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

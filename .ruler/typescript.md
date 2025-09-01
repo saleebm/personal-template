@@ -25,9 +25,16 @@
 
 - **Never create index barrel files** (index.ts, index.js) - use named exports instead
 - Always use direct imports with named exports
+- **ALWAYS use absolute imports** with workspace packages:
+  - ✅ `import { Button } from '@workspace/ui/components/button'`
+  - ❌ `import { Button } from '../button'`
+  - ❌ `import { Button } from './button'`
+- Within a package, always use full absolute paths:
+  - ✅ `import { cn } from '@workspace/ui/lib/utils'`
+  - ❌ `import { cn } from '../lib/utils'`
 - Prefer type imports for type-only imports:
 ```typescript
-import type { SomeType } from './types';
+import type { SomeType } from '@workspace/ui/types';
 ```
 
 ## Function Patterns

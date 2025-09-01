@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@workspace/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import { cn } from '@workspace/ui/lib/utils';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import type { ComponentProps, HTMLAttributes, ReactNode } from 'react';

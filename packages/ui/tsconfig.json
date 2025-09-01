@@ -3,9 +3,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@workspace/ui/*": ["./src/*"]
+      "@workspace/ui/*": ["./src/*"],
+      "@workspace/ui/lib/*": ["./src/lib/*"],
+      "@workspace/ui/components/*": ["./src/components/*"],
+      "@workspace/ui/hooks/*": ["./src/hooks/*"]
     }
   },
-  "include": ["."],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

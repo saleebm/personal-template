@@ -1,7 +1,12 @@
+import js from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+
 export default [
   {
     files: ['**/*.ts', '**/*.js'],
     languageOptions: {
+      parser: tsParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
@@ -11,13 +16,22 @@ export default [
         __dirname: 'readonly',
         __filename: 'readonly',
       },
+      parserOptions: {
+        project: './tsconfig.json',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
     },
     rules: {
-      'no-unused-vars': 'warn',
+      ...js.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
       'no-console': 'off',
     },
   },
   {
-    ignores: ['dist/**', 'node_modules/**'],
+    ignores: ['dist/**', 'node_modules/**', 'eslint.config.js'],
   },
 ];

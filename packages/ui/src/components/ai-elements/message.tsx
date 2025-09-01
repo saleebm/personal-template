@@ -2,7 +2,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '@workspace/components/ui/avatar';
+} from '@workspace/ui/components/avatar';
 import { cn } from '@workspace/ui/lib/utils';
 import type { UIMessage } from 'ai';
 import type { ComponentProps, HTMLAttributes } from 'react';

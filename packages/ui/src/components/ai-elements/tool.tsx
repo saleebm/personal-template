@@ -1,11 +1,11 @@
 'use client';
 
-import { Badge } from '@workspace/components/ui/badge';
+import { Badge } from '@workspace/ui/components/badge';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@workspace/components/ui/collapsible';
+} from '@workspace/ui/components/collapsible';
 import { cn } from '@workspace/ui/lib/utils';
 import type { ToolUIPart } from 'ai';
 import {

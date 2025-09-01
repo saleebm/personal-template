@@ -116,7 +116,7 @@ GEMINI_API_KEY=your_gemini_api_key
 
 ### Application-specific Variables
 
-For the web app, create `apps/web/.env.local`:
+For the web app, create `apps/web/.env`:
 
 ```bash
 # Copy from apps/web/.env.example

@@ -5,12 +5,12 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@workspace/components/ui/collapsible';
+} from '@workspace/ui/components/collapsible';
 import { cn } from '@workspace/ui/lib/utils';
 import { BrainIcon, ChevronDownIcon } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { createContext, memo, useContext, useEffect, useState } from 'react';
-import { Response } from './response';
+import { Response } from '@workspace/ui/components/ai-elements/response';
 
 type ReasoningContextValue = {
   isStreaming: boolean;
@@ -119,7 +119,6 @@ export type ReasoningTriggerProps = ComponentProps<
 export const ReasoningTrigger = memo(
   ({
     className,
-    title = 'Reasoning',
     children,
     ...props
   }: ReasoningTriggerProps) => {

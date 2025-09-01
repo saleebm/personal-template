@@ -4,7 +4,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@workspace/components/ui/collapsible';
+} from '@workspace/ui/components/collapsible';
 import { cn } from '@workspace/ui/lib/utils';
 import { BookIcon, ChevronDownIcon } from 'lucide-react';
 import type { ComponentProps } from 'react';
@@ -23,7 +23,6 @@ export type SourcesTriggerProps = ComponentProps<typeof CollapsibleTrigger> & {
 };
 
 export const SourcesTrigger = ({
-  className,
   count,
   children,
   ...props

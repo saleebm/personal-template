@@ -4,7 +4,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@workspace/components/ui/collapsible';
+} from '@workspace/ui/components/collapsible';
 import { cn } from '@workspace/ui/lib/utils';
 import { ChevronDownIcon, SearchIcon } from 'lucide-react';
 import type { ComponentProps } from 'react';

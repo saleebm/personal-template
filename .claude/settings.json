@@ -23,10 +23,10 @@
       "WebFetch"
     ],
     "additionalDirectories": [
-      "/Users/minasaleeb/workspaces/me/copt-dev-v1",
-      "/Users/minasaleeb/workspaces/me/lesswhelmed-me",
-      "/Users/minasaleeb/workspaces/business/ai-doctore",
-      "/Users/minasaleeb/workspaces/business/scratch/ai-dr"
+      "~/workspaces/me/copt-dev-v1",
+      "~/workspaces/me/lesswhelmed-me",
+      "~/workspaces/business/ai-doctore",
+      "~/workspaces/business/scratch/ai-dr"
     ]
   },
   "enableAllProjectMcpServers": true,
@@ -46,7 +46,7 @@
   ],
   "statusLine": {
     "type": "command",
-    "command": "/Users/minasaleeb/.claude/statusline-enhanced.sh"
+    "command": "~/.claude/statusline-enhanced.sh"
   },
   "outputStyle": "AI Dr. Workflow Style",
   "hooks": {

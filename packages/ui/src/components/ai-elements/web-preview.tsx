@@ -1,18 +1,18 @@
 'use client';
 
-import { Button } from '@workspace/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@workspace/components/ui/collapsible';
-import { Input } from '@workspace/components/ui/input';
+} from '@workspace/ui/components/collapsible';
+import { Input } from '@workspace/ui/components/input';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@workspace/components/ui/tooltip';
+} from '@workspace/ui/components/tooltip';
 import { cn } from '@workspace/ui/lib/utils';
 import { ChevronDownIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
