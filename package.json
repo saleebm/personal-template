@@ -1,6 +1,6 @@
 {
-  "name": "ai-doctore",
-  "version": "0.0.1",
+  "name": "bun-monorepo-template",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "turbo build",

@@ -41,9 +41,6 @@
     "shadcn"
   ],
   "disabledMcpjsonServers": [
-    "ai-dr-github-search",
-    "ai-dr-categorization",
-    "ai-dr-gemini",
     "Deep Graph MCP",
     "taskmaster-ai"
   ],

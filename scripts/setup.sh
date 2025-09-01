@@ -1,0 +1,320 @@
+#!/bin/bash
+
+# Bun Monorepo Template - Interactive Setup Script
+# This script helps you set up the development environment
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+print_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+print_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
+print_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+# Function to check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Function to prompt for input with default value
+prompt_with_default() {
+    local prompt="$1"
+    local default="$2"
+    local var_name="$3"
+    
+    read -p "$prompt [$default]: " input
+    if [ -z "$input" ]; then
+        eval "$var_name='$default'"
+    else
+        eval "$var_name='$input'"
+    fi
+}
+
+# Function to prompt for yes/no
+confirm() {
+    local prompt="$1"
+    local default="${2:-y}"
+    
+    if [ "$default" = "y" ]; then
+        read -p "$prompt [Y/n]: " response
+        response=${response:-y}
+    else
+        read -p "$prompt [y/N]: " response
+        response=${response:-n}
+    fi
+    
+    [[ "$response" =~ ^[Yy]$ ]]
+}
+
+echo "======================================"
+echo "  Bun Monorepo Template Setup Wizard  "
+echo "======================================"
+echo ""
+
+# Step 1: Check prerequisites
+print_info "Checking prerequisites..."
+
+# Check for Bun
+if ! command_exists bun; then
+    print_error "Bun is not installed!"
+    print_info "Please install Bun first: https://bun.sh"
+    print_info "Run: curl -fsSL https://bun.sh/install | bash"
+    exit 1
+fi
+print_success "Bun is installed ($(bun --version))"
+
+# Check for Node.js (optional but recommended)
+if command_exists node; then
+    NODE_VERSION=$(node --version | cut -d'v' -f2 | cut -d'.' -f1)
+    if [ "$NODE_VERSION" -lt 22 ]; then
+        print_warning "Node.js version is less than 22. Some tooling might not work optimally."
+    else
+        print_success "Node.js is installed ($(node --version))"
+    fi
+else
+    print_warning "Node.js is not installed. Some tooling might not work."
+fi
+
+# Check for Git
+if ! command_exists git; then
+    print_error "Git is not installed!"
+    exit 1
+fi
+print_success "Git is installed"
+
+# Check for PostgreSQL (psql command)
+if command_exists psql; then
+    print_success "PostgreSQL client is installed"
+    HAS_POSTGRES=true
+else
+    print_warning "PostgreSQL client not found. You'll need to set up the database manually."
+    HAS_POSTGRES=false
+fi
+
+echo ""
+
+# Step 2: Project configuration
+print_info "Configuring project..."
+
+# Get project name
+prompt_with_default "Enter your project name" "my-app" PROJECT_NAME
+
+# Sanitize project name for database
+DB_NAME=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | tr '-' '_' | tr ' ' '_')
+
+# Update package.json with project name
+if confirm "Would you like to rename the project from 'bun-monorepo-template' to '$PROJECT_NAME'?"; then
+    print_info "Updating package.json..."
+    if [ -f "package.json" ]; then
+        # Use a more portable sed command
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' "s/\"name\": \"bun-monorepo-template\"/\"name\": \"$PROJECT_NAME\"/" package.json
+        else
+            sed -i "s/\"name\": \"bun-monorepo-template\"/\"name\": \"$PROJECT_NAME\"/" package.json
+        fi
+        print_success "Updated package.json"
+    fi
+fi
+
+echo ""
+
+# Step 3: Environment setup
+print_info "Setting up environment variables..."
+
+# Check if .env already exists
+if [ -f ".env" ]; then
+    if confirm ".env file already exists. Do you want to overwrite it?"; then
+        cp .env .env.backup
+        print_info "Backed up existing .env to .env.backup"
+    else
+        print_info "Keeping existing .env file"
+        SKIP_ENV=true
+    fi
+fi
+
+if [ "$SKIP_ENV" != "true" ]; then
+    # Database configuration
+    print_info "Database configuration:"
+    prompt_with_default "Database host" "localhost" DB_HOST
+    prompt_with_default "Database port" "5432" DB_PORT
+    prompt_with_default "Database name" "$DB_NAME" DB_NAME
+    prompt_with_default "Database user" "postgres" DB_USER
+    
+    # Password prompt (hidden input)
+    echo -n "Database password [postgres]: "
+    read -s DB_PASS
+    echo ""
+    DB_PASS=${DB_PASS:-postgres}
+    
+    # Construct DATABASE_URL
+    DATABASE_URL="postgresql://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT/$DB_NAME"
+    
+    # Optional: API keys
+    echo ""
+    if confirm "Do you want to configure optional API keys now?"; then
+        prompt_with_default "GitHub Token (press Enter to skip)" "" GITHUB_TOKEN
+        prompt_with_default "Gemini API Key (press Enter to skip)" "" GEMINI_API_KEY
+    fi
+    
+    # Create .env file
+    cat > .env << EOF
+# Environment Variables
+# Generated by setup script on $(date)
+
+# Database
+DATABASE_URL=$DATABASE_URL
+
+# Optional: API Keys
+EOF
+
+    if [ -n "$GITHUB_TOKEN" ]; then
+        echo "GITHUB_TOKEN=$GITHUB_TOKEN" >> .env
+    else
+        echo "# GITHUB_TOKEN=your_github_token_here" >> .env
+    fi
+    
+    if [ -n "$GEMINI_API_KEY" ]; then
+        echo "GEMINI_API_KEY=$GEMINI_API_KEY" >> .env
+    else
+        echo "# GEMINI_API_KEY=your_gemini_api_key_here" >> .env
+    fi
+    
+    echo "" >> .env
+    echo "# Development Settings" >> .env
+    echo "NODE_ENV=development" >> .env
+    echo "NEXT_TELEMETRY_DISABLED=1" >> .env
+    
+    print_success "Created .env file"
+    
+    # Create apps/web/.env.local
+    if [ ! -f "apps/web/.env.local" ]; then
+        cat > apps/web/.env.local << EOF
+# Next.js Application Environment Variables
+# Generated by setup script on $(date)
+
+# Database
+DATABASE_URL=$DATABASE_URL
+
+# Public variables (available in browser)
+NEXT_PUBLIC_API_URL=http://localhost:3000
+
+# Optional: Next.js settings
+NEXT_TELEMETRY_DISABLED=1
+NODE_ENV=development
+EOF
+        print_success "Created apps/web/.env.local"
+    fi
+fi
+
+echo ""
+
+# Step 4: Install dependencies
+print_info "Installing dependencies..."
+bun install
+print_success "Dependencies installed"
+
+echo ""
+
+# Step 5: Database setup
+if [ "$HAS_POSTGRES" = true ] && [ "$SKIP_ENV" != "true" ]; then
+    if confirm "Would you like to set up the database now?"; then
+        print_info "Setting up database..."
+        
+        # Test database connection
+        print_info "Testing database connection..."
+        if PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -lqt | cut -d \| -f 1 | grep -qw "$DB_NAME"; then
+            print_success "Database '$DB_NAME' already exists"
+        else
+            if confirm "Database '$DB_NAME' doesn't exist. Create it now?"; then
+                PGPASSWORD="$DB_PASS" createdb -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" "$DB_NAME" 2>/dev/null || {
+                    print_warning "Could not create database automatically. You may need to create it manually."
+                    print_info "Run: createdb $DB_NAME"
+                }
+            fi
+        fi
+        
+        # Run Prisma setup
+        print_info "Setting up Prisma..."
+        cd packages/database
+        bun run db:generate
+        print_success "Prisma client generated"
+        
+        if confirm "Push schema to database?"; then
+            bun run db:push
+            print_success "Database schema pushed"
+        fi
+        
+        if confirm "Seed the database with sample data?"; then
+            bun run db:seed
+            print_success "Database seeded"
+        fi
+        
+        cd ../..
+    fi
+else
+    print_warning "Skipping automatic database setup"
+    print_info "To set up the database manually, run:"
+    print_info "  1. Create database: createdb $DB_NAME"
+    print_info "  2. Generate Prisma client: bun db:generate"
+    print_info "  3. Push schema: bun db:push"
+    print_info "  4. (Optional) Seed database: bun db:seed"
+fi
+
+echo ""
+
+# Step 6: Git setup
+if [ ! -d ".git" ]; then
+    if confirm "Initialize git repository?"; then
+        git init
+        print_success "Git repository initialized"
+        
+        if confirm "Create initial commit?"; then
+            git add .
+            git commit -m "Initial commit from Bun Monorepo Template"
+            print_success "Initial commit created"
+        fi
+    fi
+fi
+
+echo ""
+
+# Step 7: Final checks
+print_info "Running final checks..."
+
+# Type checking
+print_info "Running type check..."
+if bun typecheck 2>/dev/null; then
+    print_success "Type checking passed"
+else
+    print_warning "Type checking has some issues. Run 'bun typecheck' to see details."
+fi
+
+echo ""
+
+# Success message
+echo "======================================"
+echo -e "${GREEN}    Setup Complete! 🎉${NC}"
+echo "======================================"
+echo ""
+echo "Your Bun monorepo is ready to go!"
+echo ""
+echo "Next steps:"
+echo "  1. Start the development server: ${GREEN}bun dev${NC}"
+echo "  2. Open your browser to: ${BLUE}http://localhost:3000${NC}"
+echo "  3. (Optional) Open Prisma Studio: ${GREEN}bun db:studio${NC}"
+echo ""
+echo "Useful commands:"
+echo "  - ${GREEN}bun dev${NC}        - Start development server"
+echo "  - ${GREEN}bun build${NC}      - Build for production"
+echo "  - ${GREEN}bun test${NC}       - Run tests"
+echo "  - ${GREEN}bun typecheck${NC}  - Check TypeScript types"
+echo "  - ${GREEN}bun lint${NC}       - Run linter"
+echo ""
+echo "Happy coding! 🚀"
