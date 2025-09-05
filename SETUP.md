@@ -13,85 +13,126 @@ This template requires:
 
 ## Quick Start
 
-### 1. Clone and Setup
+### 1. Clone the Template
 
 ```bash
 # Clone the template
-git clone https://github.com/yourusername/bun-monorepo-template.git my-project
+git clone https://github.com/saleebm/personal-template my-project
 cd my-project
+rm -rf .git
+git init
+```
 
+### 2. Run the Unified Setup Script
+
+The template now includes a comprehensive setup script that handles everything automatically:
+
+```bash
+# Interactive setup (recommended for first-time users)
+./scripts/setup.sh
+
+# Non-interactive setup (for CI/CD or automated environments)
+PROJECT_NAME="my-project" DB_PASSWORD="mypassword" ./scripts/setup.sh --non-interactive
+
+# Skip database setup entirely
+./scripts/setup.sh --skip-database
+```
+
+**Setup Script Features:**
+- ✅ **Automatic backup** of existing `.env` files with timestamps
+- ✅ **Value preservation** - never overwrites your existing settings
+- ✅ **Smart environment management** with variable interpolation
+- ✅ **Database setup** with connection testing and schema initialization
+- ✅ **Resume functionality** if interrupted
+- ✅ **Non-interactive mode** for automation
+
+**Environment Variables (for non-interactive mode):**
+```bash
+PROJECT_NAME="my-app"           # Project name
+DB_HOST="localhost"             # Database host
+DB_PORT="5432"                  # Database port
+DB_NAME="my_database"           # Database name
+DB_USER="postgres"              # Database user
+DB_PASSWORD="mypassword"        # Database password
+GITHUB_TOKEN="your-token"       # GitHub API token
+GEMINI_API_KEY="your-key"       # Gemini AI API key
+OPENAI_API_KEY="your-key"       # OpenAI API key
+AI_GATEWAY_API_KEY="your-key"   # AI Gateway API key
+```
+
+### 3. Manual Setup (Alternative)
+
+If you prefer manual configuration or need to troubleshoot:
+
+```bash
 # Install dependencies
 bun install
-```
 
-### 2. Configure Environment
-
-Update the `.env` files with your credentials:
-
-```bash
-# Root .env
-DATABASE_URL=postgresql://user:password@localhost:5432/your_database
-GEMINI_API_KEY=your-gemini-api-key
-GITHUB_TOKEN=your-github-token
-AUTH_HEADER=your-secure-api-key
-
-# Also update:
-# - packages/database/.env
-# - apps/web/.env
-```
-
-### 3. Database Setup
-
-```bash
 # Create database
 createdb your_database
 
-# Push schema to database
-bun run db:push
+# Copy and configure environment files
+cp .env.example .env
+cp apps/web/.env.example apps/web/.env
+cp packages/database/.env.example packages/database/.env
 
-# (Optional) Seed with sample data
-bun run db:seed
+# Edit .env files with your credentials
+# Then run:
+bun db:generate
+bun db:push
+bun db:seed  # Optional
 ```
 
-### 4. Claude AI Integration
+### 4. Start Development
 
-To enable AI-powered workflows:
-
-```bash
-# Start Claude CLI
-claude
-
-# Install GitHub App for AI Dr workflows
-/install-github-app
-
-# Follow the prompts to authenticate
-```
-
-### 5. Start Development
+After running the setup script, you can immediately start developing:
 
 ```bash
 # Start development server
 bun dev
 
-# In a new terminal, start Claude for AI assistance
+# In another terminal, open Prisma Studio (optional)
+bun db:studio
+
+# Your app will be available at http://localhost:3000
+```
+
+### 5. Claude AI Integration (Optional)
+
+If you're using Claude for AI-powered development:
+
+```bash
+# Start Claude CLI in your project
 claude
+
+# The template includes pre-configured Claude instructions in:
+# - CLAUDE.md (root instructions)
+# - .ruler/ directory (agent rules and instructions)
 ```
 
 ## 📁 Project Structure
 
 ```
 .
-├── apps/
-│   └── web/              # Next.js 15 application
-├── packages/
-│   ├── database/         # Prisma ORM & database utilities
-│   ├── ui/              # Shared UI components
-│   └── config-*/        # Configuration packages
-├── scripts/             # Database and setup scripts
-├── .claude/             # Claude AI configuration
-├── .ruler/              # Agent rules and instructions
-└── turbo.json          # Turborepo configuration
+├── apps/                    # Applications
+│   └── web/                # Next.js 15 web application
+├── packages/               # Shared packages
+│   ├── database/          # Prisma database client
+│   ├── ui/                # Shared UI components
+│   ├── logger/            # Logging utilities
+│   ├── eslint-config/     # Shared ESLint configuration
+│   └── typescript-config/ # Shared TypeScript configuration
+├── scripts/               # Automation scripts (unified setup.sh)
+├── docs/                  # Documentation
+├── .ruler/                # Agent rules and instructions (if using Claude)
+└── turbo.json            # Turborepo configuration
 ```
+
+### Key Files
+- **`scripts/setup.sh`** - Unified setup script (replaces all previous setup scripts)
+- **`.env.example`** - Root environment template
+- **`apps/web/.env.example`** - Next.js app environment template
+- **`packages/database/.env.example`** - Database-specific template
 
 ## 🛠️ Available Commands
 
@@ -104,14 +145,17 @@ claude
 
 ### Database
 - `bun db:generate` - Generate Prisma client
-- `bun db:push` - Push schema changes
-- `bun db:migrate:dev` - Create migration
+- `bun db:push` - Push schema changes to database
+- `bun db:migrate:dev` - Create and apply migrations (dev)
+- `bun db:migrate:deploy` - Apply migrations (production)
 - `bun db:studio` - Open Prisma Studio
+- `bun db:seed` - Seed the database
+- `bun db:format` - Format Prisma schema
 
-### MCP Servers
-- `bun mcp:filesystem` - File system operations
-- `bun mcp:github` - GitHub integration
-- `bun mcp:sequential-thinking` - AI reasoning
+### Testing
+- `bun test` - Run all tests
+- `bun test:watch` - Run tests in watch mode
+- `bun test:coverage` - Run tests with coverage
 
 ## 🤖 Claude AI Features
 
@@ -141,15 +185,50 @@ claude
 
 ## 🚨 Troubleshooting
 
+### Setup Script Issues
+
+#### Setup Script Won't Run
+```bash
+# Make sure the script is executable
+chmod +x scripts/setup.sh
+
+# Check if Bun is installed
+bun --version
+
+# Run with more verbose output
+bash -x scripts/setup.sh
+```
+
+#### Setup Interrupted
+```bash
+# The script supports resume functionality
+# Simply run it again - it will continue from where it left off
+./scripts/setup.sh
+```
+
+#### Environment Values Not Preserved
+```bash
+# Check if backups were created
+ls -la *.backup.*
+
+# The script automatically creates timestamped backups
+# You can restore from: .env.backup.YYYYMMDD_HHMMSS
+```
+
 ### Common Issues
 
 #### Database Connection Failed
 ```bash
 # Check PostgreSQL is running
 pg_ctl status
+# or on Ubuntu/Debian:
+sudo systemctl status postgresql
 
-# Verify connection string
-psql postgresql://user:password@localhost:5432/your_database
+# Test connection manually
+psql -h localhost -p 5432 -U postgres -d your_database
+
+# Re-run just the database setup
+./scripts/setup.sh --non-interactive
 ```
 
 #### Port Already in Use
@@ -159,15 +238,33 @@ lsof -i :3000
 
 # Kill the process
 kill -9 <PID>
+
+# Or use a different port
+PORT=3001 bun dev
 ```
 
 #### Type Errors
 ```bash
 # Regenerate Prisma client
-bun run db:generate
+bun db:generate
 
 # Check all types
 bun typecheck
+
+# Build all packages
+bun build
+```
+
+#### Environment Variables Not Working
+```bash
+# Check if .env files exist in correct locations
+ls -la .env apps/web/.env packages/database/.env
+
+# Verify variable interpolation in root .env
+cat .env | grep DATABASE_URL
+
+# For Next.js, check that variables are expanded (no ${} syntax)
+cat apps/web/.env | grep DATABASE_URL
 ```
 
 ## 📚 Documentation

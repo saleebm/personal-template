@@ -27,7 +27,7 @@ A modern, production-ready monorepo template built with Bun, TypeScript, Turbore
 ### 1. Clone the template
 
 ```bash
-git clone https://github.com/yourusername/bun-monorepo-template.git my-project
+git clone https://github.com/saleebm/personal-template my-project
 cd my-project
 rm -rf .git
 git init
