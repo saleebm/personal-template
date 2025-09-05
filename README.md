@@ -33,22 +33,45 @@ rm -rf .git
 git init
 ```
 
-### 2. Run the setup script
+### 2. Run the unified setup script
 
 ```bash
-# Make the script executable
-chmod +x scripts/setup.sh
-
-# Run the setup wizard
+# Run the interactive setup wizard
 ./scripts/setup.sh
+
+# Or run non-interactively with environment variables
+PROJECT_NAME="my-app" DB_PASSWORD="mypassword" ./scripts/setup.sh --non-interactive
+
+# Skip database setup entirely
+./scripts/setup.sh --skip-database
 ```
 
+**Setup Options:**
+- `--non-interactive`: Run without prompts (uses environment variables or defaults)
+- `--skip-database`: Skip database setup entirely
+- `--help`: Show all available options
+
+**Environment Variables (for non-interactive mode):**
+- `PROJECT_NAME`: Project name (default: my-app)
+- `DB_HOST`: Database host (default: localhost)
+- `DB_PORT`: Database port (default: 5432)
+- `DB_NAME`: Database name (default: derived from project name)
+- `DB_USER`: Database user (default: postgres)
+- `DB_PASSWORD`: Database password (default: postgres)
+- `GITHUB_TOKEN`: GitHub token for MCP servers
+- `GEMINI_API_KEY`: Gemini API key
+- `OPENAI_API_KEY`: OpenAI API key
+- `AI_GATEWAY_API_KEY`: AI Gateway API key
+
 The setup script will:
-- Install dependencies
-- Configure environment variables
-- Set up the database
-- Initialize Prisma
-- Prepare the development environment
+- ✅ **Backup existing .env files** with timestamps
+- ✅ **Preserve existing environment values** during updates
+- ✅ **Install dependencies** using Bun
+- ✅ **Configure environment variables** with proper interpolation
+- ✅ **Set up PostgreSQL database** with connection testing
+- ✅ **Initialize Prisma** with schema generation and seeding
+- ✅ **Run final checks** including type checking
+- ✅ **Support resume functionality** if interrupted
 
 ### 3. Start developing
 
@@ -101,28 +124,49 @@ Run these commands from the root of the monorepo:
 
 ## Environment Variables
 
-### Required Variables
+The unified setup script automatically handles environment variable configuration. It creates and manages:
 
-Create a `.env` file in the root directory (copy from `.env.example`):
+- **Root `.env`**: Uses variable interpolation for maintainability
+- **`packages/database/.env`**: Prisma-specific configuration
+- **`apps/web/.env`**: Next.js app configuration with expanded variables
 
+### Manual Configuration (Optional)
+
+If you prefer to set up manually, create these files from their `.env.example` counterparts:
+
+**Root `.env`** (with variable interpolation):
 ```bash
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/your_database_name
+# Database Configuration
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_NAME=your_db_name
+DB_PORT=5432
 
-# Optional: API Keys (if using MCP servers)
+# Uses variable interpolation for maintainability
+DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+
+# Optional: API Keys
 GITHUB_TOKEN=your_github_token
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-### Application-specific Variables
-
-For the web app, create `apps/web/.env`:
-
+**For Next.js app (`apps/web/.env`)**:
 ```bash
-# Copy from apps/web/.env.example
-DATABASE_URL=postgresql://user:password@localhost:5432/your_database_name
+# Database (expanded URL for Next.js compatibility)
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/your_db_name
 NEXT_PUBLIC_API_URL=http://localhost:3000
 ```
+
+### Environment File Management
+
+The setup script includes advanced environment file management:
+
+- **🔄 Preserves existing values**: Never overwrites your custom settings
+- **🔒 Creates backups**: Timestamps all backups for safety
+- **🔗 Uses interpolation**: Root `.env` uses `${VARIABLE}` syntax for maintainability
+- **⚡ Expands for Next.js**: Web app gets fully expanded URLs for compatibility
+- **📍 Smart detection**: Reads existing values from any location
 
 ## Adding New Packages
 

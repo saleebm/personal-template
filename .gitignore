@@ -40,6 +40,7 @@ npm-debug.log*
 .env.production
 .env.development
 *.env
+.env.*
 !.env.example
 # Personal data
 .ai-dr/prompts/
