@@ -1,0 +1,32 @@
+{
+  "original": "Fix my React component that isn't working",
+  "enhanced": "Please help me fix my React component issue. Here's what I need:\n\n1. Current behavior: [Describe what's happening/not working]\n2. Expected behavior: [What should the component do]\n3. Component code: \n```jsx\n[Insert your component code here]\n```\n4. Error messages (if any): [Include exact error text]\n5. React version: [Specify version]\n6. Relevant dependencies: [List key dependencies and versions]\n\nAdditional context:\n- Have you tried any solutions already?\n- Are there any specific browser/environment requirements?\n- Is this a new issue or did it occur after certain changes?",
+  "improvements": [
+    "Added structure with clear sections for providing information",
+    "Requested specific technical details (code, error messages, versions)",
+    "Included version/dependency information requirements",
+    "Added context about previous attempts and environment",
+    "Created a clear format for code sharing using markdown",
+    "Prompted for both current and expected behavior to clarify the issue"
+  ],
+  "quality": {
+    "score": 95,
+    "feedback": [
+      "The enhanced prompt provides a comprehensive template for debugging React issues",
+      "Clear structure makes it easy for users to provide all necessary information",
+      "Technical specificity helps in getting more accurate solutions",
+      "Includes both technical and contextual information requirements"
+    ],
+    "categories": {
+      "clarity": 95,
+      "specificity": 100,
+      "context": 90,
+      "actionability": 95
+    }
+  },
+  "metadata": {
+    "enhancedAt": "2025-08-26T16:06:42.813Z",
+    "model": "claude-sonnet-4-20250514",
+    "processingTime": 11420
+  }
+}

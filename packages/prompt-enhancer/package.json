@@ -1,0 +1,59 @@
+{
+  "name": "@workspace/prompt-enhancer",
+  "version": "1.0.0",
+  "description": "AI-powered prompt enhancement SDK for creating world-class prompts",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "enhance-prompt": "./dist/bin/enhance-prompt.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "enhance": "bun run scripts/enhance-prompt.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "build": "bunchee",
+    "prepublishOnly": "bun run build",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^2.0.11",
+    "@ai-sdk/anthropic": "^2.0.0",
+    "ai": "^5.0.26",
+    "chalk": "^5.6.0",
+    "minimatch": "^10.0.3",
+    "uuid": "^11.1.0",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/minimatch": "^6.0.0",
+    "@types/uuid": "^10.0.0",
+    "bunchee": "^6.6.0",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "bun": "^1.0.0"
+  }
+}

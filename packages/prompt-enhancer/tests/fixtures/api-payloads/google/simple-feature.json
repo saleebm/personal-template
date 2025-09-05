@@ -1,0 +1,67 @@
+{
+  "request": {
+    "prompt": "Write a function to sort an array",
+    "context": "TypeScript project using Bun runtime",
+    "model": "gemini-2.5-pro"
+  },
+  "response": {
+    "object": {
+      "instruction": "Implement a generic sorting function in TypeScript that can sort arrays of various types (numbers, strings, objects) with customizable comparison logic. The function should be type-safe, performant, and follow functional programming principles.",
+      "workflowType": "feature",
+      "context": {
+        "relevantFiles": ["src/utils/array-helpers.ts", "tests/utils/array-helpers.test.ts"],
+        "dependencies": ["typescript", "bun"],
+        "technicalStack": ["TypeScript", "Bun"],
+        "agentSuggestions": []
+      },
+      "successCriteria": [
+        "Function correctly sorts arrays of numbers in ascending and descending order",
+        "Function correctly sorts arrays of strings alphabetically",
+        "Function supports custom comparison functions for complex objects",
+        "TypeScript types are properly defined with generics",
+        "All edge cases are handled (empty arrays, single elements, undefined values)",
+        "Performance is O(n log n) for average case",
+        "Unit tests achieve 100% code coverage"
+      ],
+      "constraints": [
+        "Use TypeScript strict mode",
+        "Implement as a pure function with no side effects",
+        "Support both mutable and immutable sorting options",
+        "Follow Bun's module resolution for imports"
+      ],
+      "clarifyingQuestions": [
+        "Should the function modify the original array or return a new sorted array?",
+        "Do you need support for stable sorting?",
+        "Should it handle sorting of mixed type arrays?",
+        "What should be the behavior for arrays containing null or undefined values?"
+      ],
+      "confidenceScore": 95,
+      "estimatedComplexity": "simple",
+      "orderOfSteps": [
+        "1. Define TypeScript interfaces and type definitions",
+        "2. Implement the core sorting logic with generics",
+        "3. Add support for custom comparison functions",
+        "4. Handle edge cases and error conditions",
+        "5. Write comprehensive unit tests",
+        "6. Document the function with JSDoc comments"
+      ],
+      "tokenCount": 450
+    },
+    "usage": {
+      "inputTokens": 125,
+      "outputTokens": 325,
+      "totalTokens": 450
+    },
+    "providerMetadata": {
+      "google": {
+        "groundingMetadata": null,
+        "urlContextMetadata": null
+      }
+    }
+  },
+  "metadata": {
+    "captured": "2025-01-05T10:00:00.000Z",
+    "service": "google",
+    "testCase": "simple-feature"
+  }
+}

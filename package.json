@@ -16,7 +16,10 @@
     "db:migrate:reset": "cd packages/database && bun run db:migrate:reset",
     "db:studio": "cd packages/database && bun run db:studio",
     "db:seed": "cd packages/database && bun run db:seed",
-    "db:format": "cd packages/database && bun run db:format"
+    "db:format": "cd packages/database && bun run db:format",
+    "enhance": "bun run packages/prompt-enhancer/scripts/enhance-prompt.ts",
+    "enhance:workflow": "bun run packages/prompt-enhancer/scripts/enhance-prompt.ts --workflow",
+    "enhance:help": "bun run packages/prompt-enhancer/scripts/enhance-prompt.ts --help"
   },
   "devDependencies": {
     "@intellectronica/ruler": "^0.3.6",
