@@ -1,0 +1,117 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (8.0.2.1)
+      base64
+      benchmark (>= 0.3)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.3.1)
+      connection_pool (>= 2.2.5)
+      drb
+      i18n (>= 1.6, < 2)
+      logger (>= 1.4.2)
+      minitest (>= 5.1)
+      securerandom (>= 0.3)
+      tzinfo (~> 2.0, >= 2.0.5)
+      uri (>= 0.13.1)
+    addressable (2.8.7)
+      public_suffix (>= 2.0.2, < 7.0)
+    base64 (0.3.0)
+    benchmark (0.4.1)
+    bigdecimal (3.2.3)
+    cli-kit (5.0.1)
+      cli-ui (~> 2.0)
+    cli-ui (2.3.0)
+    concurrent-ruby (1.3.5)
+    connection_pool (2.5.4)
+    diff-lcs (1.6.2)
+    dotenv (3.1.8)
+    drb (2.2.3)
+    event_stream_parser (1.0.0)
+    faraday (2.13.4)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-multipart (1.1.1)
+      multipart-post (~> 2.0)
+    faraday-net_http (3.4.1)
+      net-http (>= 0.5.0)
+    faraday-retry (2.3.2)
+      faraday (~> 2.0)
+    i18n (1.14.7)
+      concurrent-ruby (~> 1.0)
+    json (2.13.2)
+    json-schema (6.0.0)
+      addressable (~> 2.8)
+      bigdecimal (~> 3.1)
+    logger (1.7.0)
+    minitest (5.25.5)
+    multipart-post (2.4.1)
+    net-http (0.6.0)
+      uri
+    open_router (0.3.3)
+      activesupport (>= 6.0)
+      dotenv (>= 2)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
+    ostruct (0.6.3)
+    public_suffix (6.0.2)
+    raix (1.0.3)
+      activesupport (>= 6.0)
+      faraday-retry (~> 2.0)
+      open_router (~> 0.2)
+      ostruct
+      ruby-openai (~> 8.1)
+    rexml (3.4.2)
+    roast-ai (0.4.7)
+      activesupport (>= 7.0)
+      cli-kit (~> 5.0)
+      cli-ui (= 2.3.0)
+      diff-lcs (~> 1.5)
+      json-schema
+      open_router (~> 0.3)
+      raix (~> 1.0.2)
+      ruby-graphviz (~> 1.2)
+      sqlite3 (~> 2.6)
+      thor (~> 1.3)
+      zeitwerk (~> 2.6)
+    ruby-graphviz (1.2.5)
+      rexml
+    ruby-openai (8.3.0)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
+    securerandom (0.4.1)
+    sqlite3 (2.7.3-aarch64-linux-gnu)
+    sqlite3 (2.7.3-aarch64-linux-musl)
+    sqlite3 (2.7.3-arm-linux-gnu)
+    sqlite3 (2.7.3-arm-linux-musl)
+    sqlite3 (2.7.3-arm64-darwin)
+    sqlite3 (2.7.3-x86-linux-gnu)
+    sqlite3 (2.7.3-x86-linux-musl)
+    sqlite3 (2.7.3-x86_64-darwin)
+    sqlite3 (2.7.3-x86_64-linux-gnu)
+    sqlite3 (2.7.3-x86_64-linux-musl)
+    thor (1.4.0)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
+    uri (1.0.3)
+    zeitwerk (2.7.3)
+
+PLATFORMS
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
+  x86-linux-gnu
+  x86-linux-musl
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
+
+DEPENDENCIES
+  roast-ai (~> 0.4.7)
+
+BUNDLED WITH
+   2.6.9
