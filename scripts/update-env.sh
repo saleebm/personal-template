@@ -51,59 +51,48 @@ read_env_value() {
     fi
 }
 
-# Function to create or update .env file with interpolated DATABASE_URL
+# Function to create or update .env file based on .env.example template
 update_env_file() {
     local env_path="$1"
-    local is_web_app="$2"
-    local db_host="$3"
-    local db_user="$4"
-    local db_password="$5"
-    local db_name="$6"
-    local db_port="$7"
-    local github_token="$8"
-    local gemini_api_key="$9"
+    local existing_env_path="$2"
     
-    # Start building the .env content
-    local env_content=""
-    env_content+="# Environment Variables\n"
-    env_content+="# Updated by update-env script on $(date)\n\n"
-    env_content+="# Database Configuration\n"
-    env_content+="DB_HOST=$db_host\n"
-    env_content+="DB_USER=$db_user\n"
-    env_content+="DB_PASSWORD=$db_password\n"
-    env_content+="DB_NAME=$db_name\n"
-    env_content+="DB_PORT=$db_port\n"
-    env_content+="# Use variable interpolation for maintainability\n"
-    env_content+='DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}'
-    env_content+="\n\n"
-    
-    # Add API Keys section
-    env_content+="# API Keys for MCP Servers\n"
-    if [ -n "$github_token" ] && [ "$github_token" != "skip" ]; then
-        env_content+="GITHUB_TOKEN=$github_token\n"
-    else
-        env_content+="GITHUB_TOKEN=\${GITHUB_TOKEN} # Set from local machine\n"
+    if [ ! -f ".env.example" ]; then
+        print_error "No .env.example file found! Cannot generate environment files."
+        exit 1
     fi
     
-    if [ -n "$gemini_api_key" ] && [ "$gemini_api_key" != "skip" ]; then
-        env_content+="GEMINI_API_KEY=$gemini_api_key\n"
-    else
-        env_content+="GEMINI_API_KEY=\${GEMINI_API_KEY} # Set from local machine\n"
+    print_info "Generating $env_path from .env.example template"
+    
+    # Start with the .env.example structure but substitute with real values
+    cp ".env.example" "$env_path"
+    
+    # Update the timestamp comment
+    sed -i '' "s/# Updated by update-env script on .*/# Updated by update-env script on $(date)/" "$env_path"
+    
+    # Override with values from existing env file if it exists (preserving user values)
+    if [ -f "$existing_env_path" ]; then
+        print_info "Preserving existing values from $existing_env_path"
+        
+        # For each variable in the existing file, substitute it in the new file
+        while IFS='=' read -r key value; do
+            # Skip comments and empty lines
+            [[ "$key" =~ ^[[:space:]]*# ]] && continue
+            [[ -z "$key" ]] && continue
+            
+            # Clean the key
+            key=$(echo "$key" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+            [[ -z "$key" ]] && continue
+            
+            # Only substitute if the value is not empty and meaningful
+            if [[ -n "$value" ]] && [[ "$value" != "''" ]]; then
+                # Check if this variable exists in the new file
+                if grep -q "^${key}=" "$env_path"; then
+                    # Replace the line in the file with the existing value
+                    sed -i '' "s|^${key}=.*|${key}=${value}|" "$env_path"
+                fi
+            fi
+        done < "$existing_env_path"
     fi
-    
-    env_content+="\n# Optional: Development Settings\n"
-    env_content+="NODE_ENV=development\n"
-    
-    # Add web-specific variables if this is for the web app
-    if [ "$is_web_app" = "true" ]; then
-        env_content+="\n# Public variables (available in browser)\n"
-        env_content+="NEXT_PUBLIC_API_URL=http://localhost:3000\n"
-        env_content+="\n# Next.js settings\n"
-        env_content+="NEXT_TELEMETRY_DISABLED=1\n"
-    fi
-    
-    # Write the content to file
-    echo -e "$env_content" > "$env_path"
 }
 
 echo "======================================"
@@ -135,68 +124,16 @@ if [ -f "apps/web/.env" ]; then
     print_info "Found apps/web/.env file"
 fi
 
-# Determine which file to read defaults from
-DEFAULT_ENV_FILE=""
-if [ "$ROOT_ENV_EXISTS" = true ]; then
-    DEFAULT_ENV_FILE=".env"
-elif [ "$DATABASE_ENV_EXISTS" = true ]; then
-    DEFAULT_ENV_FILE="packages/database/.env"
-elif [ "$WEB_ENV_EXISTS" = true ]; then
-    DEFAULT_ENV_FILE="apps/web/.env"
-fi
-
-# Read existing values or use defaults
-if [ -n "$DEFAULT_ENV_FILE" ]; then
-    print_info "Reading existing configuration from $DEFAULT_ENV_FILE"
-    DB_HOST=$(read_env_value "$DEFAULT_ENV_FILE" "DB_HOST" "localhost")
-    DB_USER=$(read_env_value "$DEFAULT_ENV_FILE" "DB_USER" "postgres")
-    DB_PASSWORD=$(read_env_value "$DEFAULT_ENV_FILE" "DB_PASSWORD" "postgres")
-    DB_NAME=$(read_env_value "$DEFAULT_ENV_FILE" "DB_NAME" "myapp")
-    DB_PORT=$(read_env_value "$DEFAULT_ENV_FILE" "DB_PORT" "5432")
-    GITHUB_TOKEN=$(read_env_value "$DEFAULT_ENV_FILE" "GITHUB_TOKEN" "")
-    GEMINI_API_KEY=$(read_env_value "$DEFAULT_ENV_FILE" "GEMINI_API_KEY" "")
-else
-    # Use defaults if no existing files
-    DB_HOST="localhost"
-    DB_USER="postgres"
-    DB_PASSWORD="postgres"
-    DB_NAME="myapp"
-    DB_PORT="5432"
-    GITHUB_TOKEN=""
-    GEMINI_API_KEY=""
-fi
-
+# Show what files we found and will be updating  
 echo ""
-print_info "Current database configuration:"
-echo "  Host: $DB_HOST"
-echo "  Port: $DB_PORT"
-echo "  Database: $DB_NAME"
-echo "  User: $DB_USER"
+print_info "The script will preserve your existing values and only update structure."
 echo ""
 
-# Prompt for updates
-read -p "Do you want to update the database configuration? [y/N]: " UPDATE_DB
-if [[ "$UPDATE_DB" =~ ^[Yy]$ ]]; then
-    prompt_with_default "Database host" "$DB_HOST" DB_HOST
-    prompt_with_default "Database port" "$DB_PORT" DB_PORT
-    prompt_with_default "Database name" "$DB_NAME" DB_NAME
-    prompt_with_default "Database user" "$DB_USER" DB_USER
-    
-    # Password prompt (hidden input)
-    echo -n "Database password [$DB_PASSWORD]: "
-    read -s NEW_DB_PASS
-    echo ""
-    if [ -n "$NEW_DB_PASS" ]; then
-        DB_PASSWORD="$NEW_DB_PASS"
-    fi
-fi
-
-# API Keys
-echo ""
-read -p "Do you want to update API keys? [y/N]: " UPDATE_KEYS
-if [[ "$UPDATE_KEYS" =~ ^[Yy]$ ]]; then
-    prompt_with_default "GitHub Token (enter 'skip' to use environment variable)" "${GITHUB_TOKEN:-skip}" GITHUB_TOKEN
-    prompt_with_default "Gemini API Key (enter 'skip' to use environment variable)" "${GEMINI_API_KEY:-skip}" GEMINI_API_KEY
+# Ask if user wants to make changes
+read -p "Do you want to proceed with updating the environment files? [Y/n]: " PROCEED
+if [[ "$PROCEED" =~ ^[Nn]$ ]]; then
+    print_info "Aborted by user."
+    exit 0
 fi
 
 # Backup existing files
@@ -222,17 +159,71 @@ fi
 echo ""
 print_info "Updating .env files..."
 
-# Update root .env
-update_env_file ".env" "false" "$DB_HOST" "$DB_USER" "$DB_PASSWORD" "$DB_NAME" "$DB_PORT" "$GITHUB_TOKEN" "$GEMINI_API_KEY"
+# Update root .env using current values
+current_root_env=""
+if [ -f ".env" ]; then
+    current_root_env=".env"
+fi
+update_env_file ".env" "$current_root_env"
 print_success "Updated root .env"
 
-# Update packages/database/.env
-update_env_file "packages/database/.env" "false" "$DB_HOST" "$DB_USER" "$DB_PASSWORD" "$DB_NAME" "$DB_PORT" "$GITHUB_TOKEN" "$GEMINI_API_KEY"
+# Update packages/database/.env  
+current_db_env=""
+if [ -f "packages/database/.env" ]; then
+    current_db_env="packages/database/.env"
+elif [ -f ".env" ]; then
+    current_db_env=".env"
+fi
+update_env_file "packages/database/.env" "$current_db_env"
 print_success "Updated packages/database/.env"
 
-# Update apps/web/.env
-update_env_file "apps/web/.env" "true" "$DB_HOST" "$DB_USER" "$DB_PASSWORD" "$DB_NAME" "$DB_PORT" "$GITHUB_TOKEN" "$GEMINI_API_KEY"
-print_success "Updated apps/web/.env"
+# Create apps/web/.env using template and values from root .env
+update_env_file "apps/web/.env" ".env"
+
+# Now substitute shell variables with actual values for Next.js compatibility
+if [ -f "apps/web/.env" ]; then
+    print_info "Substituting shell variables with actual values for Next.js"
+    
+    # Substitute the DATABASE_URL with actual values
+    if grep -q 'DATABASE_URL=postgresql://\${DB_USER}:\${DB_PASSWORD}@\${DB_HOST}:\${DB_PORT}/\${DB_NAME}' "apps/web/.env"; then
+        # Read current values from the apps/web/.env file
+        DB_HOST_VAL=$(grep "^DB_HOST=" "apps/web/.env" | cut -d'=' -f2)
+        DB_USER_VAL=$(grep "^DB_USER=" "apps/web/.env" | cut -d'=' -f2)
+        DB_PASSWORD_VAL=$(grep "^DB_PASSWORD=" "apps/web/.env" | cut -d'=' -f2)
+        DB_NAME_VAL=$(grep "^DB_NAME=" "apps/web/.env" | cut -d'=' -f2)
+        DB_PORT_VAL=$(grep "^DB_PORT=" "apps/web/.env" | cut -d'=' -f2)
+        
+        # Build the actual DATABASE_URL
+        ACTUAL_DATABASE_URL="postgresql://${DB_USER_VAL}:${DB_PASSWORD_VAL}@${DB_HOST_VAL}:${DB_PORT_VAL}/${DB_NAME_VAL}"
+        
+        # Replace the variable interpolation with actual values
+        sed -i '' "s|DATABASE_URL=postgresql://\\\${DB_USER}:\\\${DB_PASSWORD}@\\\${DB_HOST}:\\\${DB_PORT}/\\\${DB_NAME}|DATABASE_URL='${ACTUAL_DATABASE_URL}'|g" "apps/web/.env"
+        print_success "Substituted DATABASE_URL variables with actual values"
+    fi
+    
+    # Substitute any other ${VARIABLE} references with actual values or environment variables
+    while IFS='=' read -r key value; do
+        # Skip comments and empty lines
+        [[ "$key" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "$key" ]] && continue
+        
+        # Check if value contains variable interpolation
+        if [[ "$value" =~ \$\{([^}]+)\} ]]; then
+            var_name="${BASH_REMATCH[1]}"
+            # Try to get the actual value from current environment or the value itself if it's set
+            if [ -n "${!var_name}" ]; then
+                actual_value="${!var_name}"
+                # Replace the interpolated variable with the actual value in quotes
+                sed -i '' "s|${key}=\\\${${var_name}}|${key}='${actual_value}'|g" "apps/web/.env"
+            fi
+        fi
+    done < "apps/web/.env"
+    
+    print_success "Created apps/web/.env with variable substitution for Next.js"
+else
+    print_error "Failed to create apps/web/.env!"
+    exit 1
+fi
 
 echo ""
 print_success "Environment files have been updated successfully!"

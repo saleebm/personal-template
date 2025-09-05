@@ -17,6 +17,7 @@
       "Bash(git pull:*)",
       "Bash(git merge:*)",
       "Bash(git rebase:*)",
+      "Bash(rm:*)",
       "Bash(curl:*)",
       "Read(./.env)",
       "Read(`**/*/.env.*)`",
@@ -34,15 +35,15 @@
     "filesystem",
     "context7",
     "sequential-thinking",
-    "browserbase",
-    "playwright",
-    "npm-search",
     "stagehand",
     "shadcn"
   ],
   "disabledMcpjsonServers": [
+    "npm-search",
     "Deep Graph MCP",
-    "taskmaster-ai"
+    "taskmaster-ai",
+    "browserbase",
+    "playwright"
   ],
   "statusLine": {
     "type": "command",
