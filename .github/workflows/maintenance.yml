@@ -1,0 +1,104 @@
+name: Maintenance
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  dependency-updates:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      - name: Check for outdated dependencies
+        run: |
+          echo "📦 Checking for outdated dependencies..."
+          bun outdated || true
+          
+      - name: Create dependency update report
+        run: |
+          echo "## Dependency Update Report" > dependency-report.md
+          echo "" >> dependency-report.md
+          echo "Generated on: $(date)" >> dependency-report.md
+          echo "" >> dependency-report.md
+          echo "### Outdated Packages" >> dependency-report.md
+          echo '```' >> dependency-report.md
+          bun outdated >> dependency-report.md 2>&1 || true
+          echo '```' >> dependency-report.md
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-report
+          path: dependency-report.md
+
+  code-quality:
+    name: Code Quality Metrics
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Collect metrics
+        run: |
+          echo "📊 Collecting code quality metrics..."
+          
+          # Count TypeScript files
+          echo "TypeScript files: $(find . -name '*.ts' -o -name '*.tsx' | grep -v node_modules | wc -l)"
+          
+          # Check for TODO comments
+          echo "TODO items: $(grep -r "TODO\|FIXME\|HACK" --exclude-dir=node_modules --exclude-dir=.git . | wc -l)"
+          
+          # Run type checking and count errors
+          echo "Running type check..."
+          bun typecheck 2>&1 | tee typecheck-output.txt || true
+          
+          # Run linting
+          echo "Running linter..."
+          bun lint 2>&1 | tee lint-output.txt || true
+
+  cleanup:
+    name: Repository Cleanup
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clean up temp files
+        run: |
+          echo "🧹 Cleaning up temporary files..."
+          
+          # Remove common temp files
+          find . -name "*.log" -type f -delete 2>/dev/null || true
+          find . -name ".DS_Store" -type f -delete 2>/dev/null || true
+          find . -name "Thumbs.db" -type f -delete 2>/dev/null || true
+          
+          # Clean up empty directories
+          find . -type d -empty -delete 2>/dev/null || true
+          
+          echo "✅ Cleanup complete"
+
+      - name: Check for large files
+        run: |
+          echo "📏 Checking for large files (>10MB)..."
+          find . -type f -size +10M -not -path "*/node_modules/*" -not -path "*/.git/*" -exec ls -lh {} \; | head -20

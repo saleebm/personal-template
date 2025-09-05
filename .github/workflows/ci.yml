@@ -1,0 +1,203 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize]
+    paths-ignore:
+      - '.ai-dr/**'
+      - 'musings/**'
+      - 'logs/**'
+      - '*.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Main CI job that runs all checks
+  ci:
+    name: CI Pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # For turbo affected calculation
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      # Cache Bun dependencies
+      - name: Cache Bun modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      # Cache Turborepo build outputs
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Run all checks in parallel using Turborepo
+      - name: Run Type Check
+        run: bun typecheck
+
+      - name: Run Linter
+        run: bun lint
+
+      - name: Run Tests
+        run: bun test
+        env:
+          CI: true
+
+      - name: Build packages
+        run: bun build
+
+  # Format check as a separate job for clarity
+  format:
+    name: Format Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      - name: Cache Bun modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-format-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-format-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check formatting
+        run: bun run format:check
+
+  # Monorepo affected check for PRs
+  affected:
+    name: Affected Packages Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 10
+    
+    outputs:
+      affected: ${{ steps.affected.outputs.packages }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for affected calculation
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      - name: Cache Bun modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-affected-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-affected-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Calculate affected packages
+        id: affected
+        run: |
+          echo "Checking affected packages for PR..."
+          # Using turbo to check what's affected
+          turbo run build --filter='...[origin/main]' --dry-run=json > affected.json || true
+          
+          # Extract and display affected packages
+          if [ -f affected.json ]; then
+            echo "Affected packages:"
+            cat affected.json | jq -r '.tasks[].package' | sort -u || echo "No packages affected"
+          fi
+
+      - name: Comment affected packages on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let affectedMessage = '📦 **Affected Packages**\n\n';
+            
+            try {
+              if (fs.existsSync('affected.json')) {
+                const affected = JSON.parse(fs.readFileSync('affected.json', 'utf8'));
+                const packages = [...new Set(affected.tasks?.map(t => t.package) || [])];
+                
+                if (packages.length > 0) {
+                  affectedMessage += packages.map(p => `- ${p}`).join('\n');
+                } else {
+                  affectedMessage += '_No packages affected by this change_';
+                }
+              } else {
+                affectedMessage += '_Unable to determine affected packages_';
+              }
+            } catch (e) {
+              affectedMessage += '_Error calculating affected packages_';
+            }
+            
+            // Find existing comment or create new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('Affected Packages')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: affectedMessage
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: affectedMessage
+              });
+            }

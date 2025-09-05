@@ -122,6 +122,82 @@ Run these commands from the root of the monorepo:
 - `bun db:seed` - Seed the database
 - `bun db:format` - Format Prisma schema
 
+## GitHub Actions & CI/CD
+
+This monorepo includes comprehensive GitHub Actions workflows for continuous integration and automated code review:
+
+### Workflows
+
+#### 🔄 **CI Pipeline** (`ci.yml`)
+Runs on every push and pull request to ensure code quality:
+- **Type checking** with TypeScript strict mode
+- **Linting** with ESLint
+- **Testing** with Bun's built-in test runner
+- **Building** all packages and apps
+- **Formatting** validation with Prettier
+- **Affected packages** detection for PRs (using Turborepo)
+- **Caching** for Bun dependencies and Turborepo outputs
+
+#### 🤖 **Claude Code Review** (`claude-code-review.yml`)
+Automated AI-powered code review on pull requests:
+- Comprehensive analysis of code quality and standards
+- Security vulnerability detection
+- Performance optimization suggestions
+- TypeScript best practices validation
+- Monorepo structure compliance
+- Test coverage assessment
+
+#### 💬 **Claude Actions** (`claude-actions.yml`)
+Interactive AI assistance in issues and PR comments:
+- Trigger with `@claude` in comments
+- Helps with code implementation
+- Answers technical questions
+- Provides debugging assistance
+- Follows project coding standards
+
+#### ✅ **Deploy Check** (`deploy-check.yml`)
+Pre-deployment validation for production readiness:
+- Comprehensive validation suite
+- Security scanning
+- Performance baseline checks
+- Database migration verification
+- Bundle size monitoring
+- Automated deployment readiness report
+
+#### 🧹 **Maintenance** (`maintenance.yml`)
+Weekly automated maintenance tasks:
+- Dependency update checks
+- Code quality metrics collection
+- Repository cleanup
+- Large file detection
+- TODO/FIXME tracking
+
+### Setup Requirements
+
+To use GitHub Actions with Claude integration, you need to:
+
+1. **Add GitHub Secrets**:
+   - `ANTHROPIC_API_KEY` - Your Anthropic API key for Claude
+   - Any other API keys your app requires
+
+2. **Configure Branch Protection** (recommended):
+   - Require status checks to pass before merging
+   - Require branches to be up to date before merging
+   - Include administrators in restrictions
+
+3. **Enable Actions**:
+   - Go to Settings → Actions → General
+   - Enable "Allow all actions and reusable workflows"
+
+### Workflow Features
+
+- **🚀 Bun-first approach**: All workflows use Bun for package management
+- **📦 Monorepo optimized**: Turborepo integration for affected package detection
+- **⚡ Caching strategies**: Optimized caching for faster CI runs
+- **🔒 Security focused**: Automated security scanning and secret detection
+- **📊 Performance tracking**: Build time and bundle size monitoring
+- **🤝 AI assistance**: Claude integration for code review and help
+
 ## Environment Variables
 
 The unified setup script automatically handles environment variable configuration. It creates and manages:
