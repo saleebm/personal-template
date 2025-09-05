@@ -1,6 +1,6 @@
 /// <reference types="bun-types" />
 
-declare module 'bun:test' {
+declare module "bun:test" {
   interface Matchers<R = void> {
     toBeValidPrompt(): R;
     toBeValidEnhancement(): R;

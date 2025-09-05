@@ -5,6 +5,7 @@ A production-ready monorepo template with Bun, Next.js 15, Turborepo, and Claude
 ## Prerequisites
 
 This template requires:
+
 - **macOS or Linux** (Windows not currently supported)
 - **Bun** (latest version) - [Install Bun](https://bun.sh/docs/installation)
 - **PostgreSQL** - [Install PostgreSQL](https://www.postgresql.org/download/)
@@ -39,6 +40,7 @@ PROJECT_NAME="my-project" DB_PASSWORD="mypassword" ./scripts/setup.sh --non-inte
 ```
 
 **Setup Script Features:**
+
 - ✅ **Automatic backup** of existing `.env` files with timestamps
 - ✅ **Value preservation** - never overwrites your existing settings
 - ✅ **Smart environment management** with variable interpolation
@@ -47,6 +49,7 @@ PROJECT_NAME="my-project" DB_PASSWORD="mypassword" ./scripts/setup.sh --non-inte
 - ✅ **Non-interactive mode** for automation
 
 **Environment Variables (for non-interactive mode):**
+
 ```bash
 PROJECT_NAME="my-app"           # Project name
 DB_HOST="localhost"             # Database host
@@ -129,6 +132,7 @@ claude
 ```
 
 ### Key Files
+
 - **`scripts/setup.sh`** - Unified setup script (replaces all previous setup scripts)
 - **`.env.example`** - Root environment template
 - **`apps/web/.env.example`** - Next.js app environment template
@@ -137,6 +141,7 @@ claude
 ## 🛠️ Available Commands
 
 ### Development
+
 - `bun dev` - Start development servers
 - `bun build` - Build all packages
 - `bun test` - Run tests
@@ -144,6 +149,7 @@ claude
 - `bun lint` - Run linter
 
 ### Database
+
 - `bun db:generate` - Generate Prisma client
 - `bun db:push` - Push schema changes to database
 - `bun db:migrate:dev` - Create and apply migrations (dev)
@@ -153,6 +159,7 @@ claude
 - `bun db:format` - Format Prisma schema
 
 ### Testing
+
 - `bun test` - Run all tests
 - `bun test:watch` - Run tests in watch mode
 - `bun test:coverage` - Run tests with coverage
@@ -162,6 +169,7 @@ claude
 This template is optimized for Claude AI development:
 
 ### Agent Capabilities
+
 - **Workflow Orchestration** - AI-driven task management
 - **Code Generation** - Component and API creation
 - **Type Safety** - Automatic TypeScript error resolution
@@ -188,6 +196,7 @@ claude
 ### Setup Script Issues
 
 #### Setup Script Won't Run
+
 ```bash
 # Make sure the script is executable
 chmod +x scripts/setup.sh
@@ -200,6 +209,7 @@ bash -x scripts/setup.sh
 ```
 
 #### Setup Interrupted
+
 ```bash
 # The script supports resume functionality
 # Simply run it again - it will continue from where it left off
@@ -207,6 +217,7 @@ bash -x scripts/setup.sh
 ```
 
 #### Environment Values Not Preserved
+
 ```bash
 # Check if backups were created
 ls -la *.backup.*
@@ -218,6 +229,7 @@ ls -la *.backup.*
 ### Common Issues
 
 #### Database Connection Failed
+
 ```bash
 # Check PostgreSQL is running
 pg_ctl status
@@ -232,6 +244,7 @@ psql -h localhost -p 5432 -U postgres -d your_database
 ```
 
 #### Port Already in Use
+
 ```bash
 # Find process using port 3000
 lsof -i :3000
@@ -244,6 +257,7 @@ PORT=3001 bun dev
 ```
 
 #### Type Errors
+
 ```bash
 # Regenerate Prisma client
 bun db:generate
@@ -256,6 +270,7 @@ bun build
 ```
 
 #### Environment Variables Not Working
+
 ```bash
 # Check if .env files exist in correct locations
 ls -la .env apps/web/.env packages/database/.env
@@ -287,6 +302,7 @@ MIT - See [LICENSE](LICENSE) for details
 ## 🙏 Acknowledgments
 
 Built with:
+
 - [Bun](https://bun.sh) - Fast JavaScript runtime
 - [Next.js](https://nextjs.org) - React framework
 - [Turborepo](https://turbo.build) - Monorepo build system

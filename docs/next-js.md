@@ -3,7 +3,9 @@
 You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI and Tailwind.
 
 ## Security
+
 Prioritize security to prevent vulnerabilities (e.g., XSS, CSRF). For high-risk areas (e.g., user input, authentication), conduct a mandatory <SECURITY_REVIEW> with:
+
 - Vulnerability identification.
 - Mitigation strategies (e.g., zod for validation).
 - OWASP or Next.js references.
@@ -11,7 +13,9 @@ Prioritize security to prevent vulnerabilities (e.g., XSS, CSRF). For high-risk 
 - Use secure defaults (e.g., zod v4+ for validation) and never use unsafe practices (e.g., eval).
 
 ## Performance and Robustness
+
 Optimize for performance, reliability, and scalability:
+
 - Minimize re-renders, bundle size, and server load (e.g. by using React.memo, 'use cache', 'use server' for top level components).
 - Page.tsx files must fetch initial data server-side (never `use client` in page.tsx files)
 - Keep components for pages in `components` directory in the same directory as the page.tsx file
@@ -24,6 +28,7 @@ Optimize for performance, reliability, and scalability:
 - Document trade-offs in comments or `status.md`
 
 ## Coding Standards
+
 - Use early returns for readability.
 - Style with Tailwind CSS, mobile-first. Avoid inline CSS unless justified.
 - Use functional, declarative TypeScript code. Avoid classes. Define types/interfaces.
@@ -38,6 +43,7 @@ Optimize for performance, reliability, and scalability:
 - Use React.memo and analyze bundle size
 
 ## Code Style and Structure
+
 - Write concise, technical TypeScript code with accurate examples.
 - Use functional and declarative programming patterns; avoid classes.
 - Prefer iteration and modularization over code duplication.
@@ -45,26 +51,31 @@ Optimize for performance, reliability, and scalability:
 - Structure files: exported component, subcomponents, helpers, static content, types.
 
 ## Naming Conventions
+
 - Use lowercase with dashes for directories (e.g., components/auth-wizard).
 - Favor named exports for components.
 
 ## TypeScript Usage
+
 - Never use `any`. It either works or it doesn't.
 - Use TypeScript for all code; prefer interfaces over types.
 - Avoid enums; use maps instead.
 - Use functional components with TypeScript interfaces.
 
 ## Syntax and Formatting
+
 - Use the "function" keyword for pure functions.
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
 - Use declarative JSX.
 
 ## UI and Styling
+
 - Use Shadcn UI, and Tailwind for components and styling.
 - Use AI Elements (see packages/ui/src/components/ai-elements)
 - Implement responsive design with Tailwind CSS; use a mobile-first approach.
 
 ## Key Conventions
+
 - Use 'nuqs' for URL search parameter state management.
 - Optimize Web Vitals (LCP, CLS, FID).
 - Favor server components and Next.js SSR.
@@ -94,26 +105,23 @@ Optimize for performance, reliability, and scalability:
 
 ```tsx
 // Always use async versions of runtime APIs
-const cookieStore = await cookies()
-const headersList = await headers()
-const { isEnabled } = await draftMode()
+const cookieStore = await cookies();
+const headersList = await headers();
+const { isEnabled } = await draftMode();
 
 // Handle async params in layouts/pages
-const params = await props.params
-const searchParams = await props.searchParams
-
+const params = await props.params;
+const searchParams = await props.searchParams;
 ```
 
 ## Data Fetching
 
 ```tsx
-
 // Use `use` for client-side data fetching
-const { data, isLoading, error } = use(fetchData())
+const { data, isLoading, error } = use(fetchData());
 
 // Use `useSuspense` for server-side data fetching
-const data = useSuspense(fetchData())
-
+const data = useSuspense(fetchData());
 ```
 
 ## Rendering

@@ -10,10 +10,10 @@ export const vectorUtils = {
    */
   toJson(vector: number[]): number[] {
     if (!Array.isArray(vector)) {
-      throw new Error('Vector must be an array of numbers');
+      throw new Error("Vector must be an array of numbers");
     }
     if (vector.length !== 768) {
-      throw new Error('Vector must have exactly 768 dimensions');
+      throw new Error("Vector must have exactly 768 dimensions");
     }
     return vector;
   },
@@ -22,12 +22,12 @@ export const vectorUtils = {
    * Convert JSON back to number array
    */
   fromJson(json: unknown): number[] {
-    if (!json || typeof json !== 'object') {
-      throw new Error('Invalid vector JSON');
+    if (!json || typeof json !== "object") {
+      throw new Error("Invalid vector JSON");
     }
     const vector = json as number[];
     if (!Array.isArray(vector) || vector.length !== 768) {
-      throw new Error('Invalid vector dimensions');
+      throw new Error("Invalid vector dimensions");
     }
     return vector;
   },
@@ -38,7 +38,7 @@ export const vectorUtils = {
    */
   cosineSimilarity(a: number[], b: number[]): number {
     if (a.length !== b.length) {
-      throw new Error('Vectors must have the same dimensions');
+      throw new Error("Vectors must have the same dimensions");
     }
 
     let dotProduct = 0;
@@ -71,7 +71,7 @@ export const vectorUtils = {
    */
   euclideanDistance(a: number[], b: number[]): number {
     if (a.length !== b.length) {
-      throw new Error('Vectors must have the same dimensions');
+      throw new Error("Vectors must have the same dimensions");
     }
 
     let sum = 0;
@@ -92,11 +92,13 @@ export const vectorUtils = {
    * Normalize a vector to unit length
    */
   normalize(vector: number[]): number[] {
-    const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
+    const magnitude = Math.sqrt(
+      vector.reduce((sum, val) => sum + val * val, 0),
+    );
     if (magnitude === 0) {
       return vector;
     }
-    return vector.map(val => val / magnitude);
+    return vector.map((val) => val / magnitude);
   },
 
   /**
@@ -106,13 +108,14 @@ export const vectorUtils = {
     query: number[],
     vectors: Array<{ id: string; vector: number[] }>,
     k: number = 5,
-    metric: 'cosine' | 'euclidean' = 'cosine'
+    metric: "cosine" | "euclidean" = "cosine",
   ): Array<{ id: string; similarity: number }> {
-    const similarities = vectors.map(item => {
-      const similarity = metric === 'cosine'
-        ? this.cosineSimilarity(query, item.vector)
-        : 1 / (1 + this.euclideanDistance(query, item.vector)); // Convert distance to similarity
-      
+    const similarities = vectors.map((item) => {
+      const similarity =
+        metric === "cosine"
+          ? this.cosineSimilarity(query, item.vector)
+          : 1 / (1 + this.euclideanDistance(query, item.vector)); // Convert distance to similarity
+
       return {
         id: item.id,
         similarity,
@@ -120,9 +123,7 @@ export const vectorUtils = {
     });
 
     // Sort by similarity (descending) and take top k
-    return similarities
-      .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, k);
+    return similarities.sort((a, b) => b.similarity - a.similarity).slice(0, k);
   },
 
   /**

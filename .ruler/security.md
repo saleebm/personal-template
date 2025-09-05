@@ -4,9 +4,9 @@
 
 - **Never commit secrets to git**
 - Use environment variables for all secrets
-- Validate environment configuration on startup  
+- Validate environment configuration on startup
 - Provide clear error messages for missing config
-- **Never expose** secrets in code - next.js uses PUBLIC_ prefix for public variables. All server variables must be used on server actions or api routes ONLY.
+- **Never expose** secrets in code - next.js uses PUBLIC\_ prefix for public variables. All server variables must be used on server actions or api routes ONLY.
 
 ## Input Validation
 
@@ -18,26 +18,30 @@
 
 - **Sanitize paths** to prevent directory traversal attacks
 - Always validate and sanitize file paths
-- Use allowed paths configuration  
+- Use allowed paths configuration
 - Prevent directory traversal attacks
 
 ## Environment Variables
 
 ### Server vs Client (Next.js)
+
 - **Server-only:** Variables without `NEXT_PUBLIC_` prefix (safe for secrets)
+
 ```typescript
-process.env['DATABASE_URL']
-process.env['API_SECRET']  
+process.env["DATABASE_URL"];
+process.env["API_SECRET"];
 ```
 
 - **Client-exposed:** Variables with `NEXT_PUBLIC_` prefix (public only!)
+
 ```typescript
-process.env['NEXT_PUBLIC_API_URL']
+process.env["NEXT_PUBLIC_API_URL"];
 ```
 
 ## Error Handling
 
 When a required dependency is missing:
+
 ```typescript
 if (!isAvailable) {
   throw new Error(`

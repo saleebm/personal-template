@@ -4,7 +4,6 @@ AI-powered prompt enhancement SDK that transforms vague, unstructured prompts in
 
 > **Build System**: This package is built with [bunchee](https://github.com/huozhi/bunchee) for zero-config bundling with TypeScript support, ESM/CJS dual output, and optimized builds.
 
-
 ## Features
 
 - 🤖 **AI-Powered Enhancement** - Transforms vague prompts into structured engineering tasks
@@ -60,7 +59,7 @@ bun run build  # Uses bunchee to create optimized bundles
 
 # The package is now ready to use with:
 # - ESM: dist/index.mjs
-# - CJS: dist/index.cjs  
+# - CJS: dist/index.cjs
 # - Types: dist/index.d.ts
 # - CLI: bin/enhance-prompt
 ```
@@ -70,30 +69,33 @@ bun run build  # Uses bunchee to create optimized bundles
 You can provide API keys in three ways (in order of precedence):
 
 ### 1. Via Configuration Object (Recommended)
+
 ```typescript
-import { PromptEnhancerSDK } from '@repo/prompt-enhancer';
+import { PromptEnhancerSDK } from "@repo/prompt-enhancer";
 
 const sdk = new PromptEnhancerSDK({
   apiKeys: {
-    googleApiKey: 'your-google-api-key',
-    anthropicApiKey: 'your-anthropic-api-key' // optional
+    googleApiKey: "your-google-api-key",
+    anthropicApiKey: "your-anthropic-api-key", // optional
   },
-  model: 'gemini-2.5-pro'
+  model: "gemini-2.5-pro",
 });
 ```
 
 ### 2. Via CLI Parameters
+
 ```bash
 npx @repo/prompt-enhancer --google-key "your-key" "your prompt here"
 npx @repo/prompt-enhancer --anthropic-key "your-key" --model claude-sonnet-4 "prompt"
 ```
 
 ### 3. Via Environment Variables (Fallback)
+
 ```env
 # For Gemini models
 GOOGLE_API_KEY=your-google-api-key-here
 
-# For Claude models  
+# For Claude models
 ANTHROPIC_API_KEY=your-anthropic-api-key-here
 ```
 
@@ -104,19 +106,19 @@ Get your Google API key from: https://makersuite.google.com/app/apikey
 ### Basic Usage
 
 ```typescript
-import { PromptEnhancerSDK } from '@repo/prompt-enhancer';
+import { PromptEnhancerSDK } from "@repo/prompt-enhancer";
 
 const enhancer = new PromptEnhancerSDK({
   projectPath: process.cwd(),
-  model: 'gemini-2.5-pro', // Available: gemini-2.5-pro, gemini-2.5-flash, claude-sonnet-4, etc.
+  model: "gemini-2.5-pro", // Available: gemini-2.5-pro, gemini-2.5-flash, claude-sonnet-4, etc.
   apiKeys: {
-    googleApiKey: 'your-google-api-key',
-    anthropicApiKey: 'your-anthropic-api-key' // optional
-  }
+    googleApiKey: "your-google-api-key",
+    anthropicApiKey: "your-anthropic-api-key", // optional
+  },
 });
 
 // Enhance a simple prompt
-const enhanced = await enhancer.enhance('Fix the login bug');
+const enhanced = await enhancer.enhance("Fix the login bug");
 
 console.log(enhanced.instruction); // Clear, specific instruction
 console.log(enhanced.successCriteria); // How to verify completion
@@ -128,8 +130,8 @@ console.log(enhanced.validation.score); // Quality score 0-100
 ```typescript
 // Enhance with real-time web search results
 const enhanced = await enhancer.enhanceWithSearch(
-  'How to implement OAuth 2.0',
-  'OAuth 2.0 implementation best practices 2024'
+  "How to implement OAuth 2.0",
+  "OAuth 2.0 implementation best practices 2024",
 );
 ```
 
@@ -137,12 +139,12 @@ const enhanced = await enhancer.enhanceWithSearch(
 
 ```typescript
 const enhanced = await enhancer.enhance({
-  content: 'Add user profile page',
-  type: 'feature',
+  content: "Add user profile page",
+  type: "feature",
   metadata: {
-    author: 'john.doe',
-    tags: ['ui', 'frontend']
-  }
+    author: "john.doe",
+    tags: ["ui", "frontend"],
+  },
 });
 ```
 
@@ -153,7 +155,7 @@ The prompt enhancer automatically detects and resolves agent mentions in your pr
 ```typescript
 // Direct agent mention resolution
 const resolution = await enhancer.resolveAgentMentions(
-  'I need help with nextjs-ui-api-engineer to create a modern component'
+  "I need help with nextjs-ui-api-engineer to create a modern component",
 );
 
 console.log(resolution.processedPrompt);
@@ -164,11 +166,12 @@ console.log(resolution.resolvedAgents);
 
 // Get all available agents
 const agents = await enhancer.getAvailableAgents();
-console.log(agents.map(a => a.name));
+console.log(agents.map((a) => a.name));
 // Output: ['nextjs-ui-api-engineer', 'typescript-error-resolver', ...]
 ```
 
 **Supported Agent Mention Patterns:**
+
 - Direct names: `nextjs-ui-api-engineer`, `typescript-error-resolver`
 - With prefixes: `use nextjs-ui-api-engineer`, `with typescript-error-resolver`
 - At-mentions: `@nextjs-ui-api-engineer`
@@ -211,33 +214,43 @@ new PromptEnhancerSDK(config?: {
 #### Methods
 
 ##### enhance(input: string | RawPromptInput): Promise<StructuredPrompt>
+
 Enhances a raw prompt into a structured, actionable prompt.
 
 ##### enhanceWithSearch(input: string | RawPromptInput, searchQuery?: string): Promise<StructuredPrompt>
+
 Enhances a prompt with Google Search grounding for real-time information.
 
 ##### enhanceWithWorkflow(input: string | RawPromptInput): Promise<EnhancedPromptResult>
+
 Orchestrates complex multi-step workflows with agent coordination.
 
 ##### store(prompt: StructuredPrompt): Promise<string>
+
 Saves an enhanced prompt for later retrieval.
 
 ##### retrieve(id: string): Promise<StructuredPrompt | null>
+
 Loads a previously saved prompt by ID.
 
 ##### search(query: PromptSearchQuery): Promise<StructuredPrompt[]>
+
 Searches stored prompts by criteria.
 
 ##### validate(prompt: StructuredPrompt): ValidationResult
+
 Validates a prompt and returns quality score.
 
 ##### export(prompt: StructuredPrompt, format: 'json' | 'yaml' | 'markdown'): string
+
 Exports a prompt in the specified format.
 
 ##### getAvailableAgents(): Promise<AgentInfo[]>
+
 Returns all agents found in the `.claude/agents/` directory.
 
 ##### resolveAgentMentions(prompt: string): Promise<AgentResolutionResult>
+
 Detects and resolves agent mentions in a prompt, returning the processed prompt and resolved agents.
 
 ## Workflow Types
@@ -282,9 +295,7 @@ Enhanced prompts include:
 ### Bug Fix Enhancement
 
 ```typescript
-const prompt = await enhancer.enhance(
-  'Users cant login after password reset'
-);
+const prompt = await enhancer.enhance("Users cant login after password reset");
 
 // Result includes:
 // - Clear instruction: "Fix the authentication failure that occurs when..."
@@ -297,8 +308,8 @@ const prompt = await enhancer.enhance(
 
 ```typescript
 const prompt = await enhancer.enhance({
-  content: 'Add dark mode toggle',
-  type: 'feature'
+  content: "Add dark mode toggle",
+  type: "feature",
 });
 
 // Includes examples, UI considerations, and implementation steps
@@ -329,6 +340,7 @@ bun run dev
 ### Build Output
 
 The package uses bunchee to generate:
+
 - **ESM build**: `dist/index.mjs` - For modern Node.js and bundlers
 - **CJS build**: `dist/index.cjs` - For compatibility with older Node.js
 - **TypeScript definitions**: `dist/index.d.ts` and `dist/index.d.mts`
@@ -337,19 +349,23 @@ The package uses bunchee to generate:
 ## Configuration Options
 
 ```typescript
-import { PromptEnhancerSDK, type PromptEnhancerConfig } from '@repo/prompt-enhancer';
+import {
+  PromptEnhancerSDK,
+  type PromptEnhancerConfig,
+} from "@repo/prompt-enhancer";
 
 const config: PromptEnhancerConfig = {
-  projectPath: process.cwd(),           // Project directory path
-  outputDir: '.ai-dr/crafted',          // Where to save enhanced prompts
-  enableCodebaseContext: true,          // Analyze codebase for context
-  maxContextTokens: 4000,               // Max tokens for context analysis
-  debug: false,                         // Enable debug logging
-  model: 'gemini-2.5-pro',             // AI model selection
-  apiKeys: {                            // API keys (overrides env vars)
-    googleApiKey: 'your-google-key',
-    anthropicApiKey: 'your-anthropic-key'
-  }
+  projectPath: process.cwd(), // Project directory path
+  outputDir: ".ai-dr/crafted", // Where to save enhanced prompts
+  enableCodebaseContext: true, // Analyze codebase for context
+  maxContextTokens: 4000, // Max tokens for context analysis
+  debug: false, // Enable debug logging
+  model: "gemini-2.5-pro", // AI model selection
+  apiKeys: {
+    // API keys (overrides env vars)
+    googleApiKey: "your-google-key",
+    anthropicApiKey: "your-anthropic-key",
+  },
 };
 
 const enhancer = new PromptEnhancerSDK(config);
@@ -357,13 +373,13 @@ const enhancer = new PromptEnhancerSDK(config);
 
 ### Supported Models
 
-| Model | Provider | Description |
-|-------|----------|-------------|
-| `gemini-2.5-pro` | Google | Most capable (default) |
-| `gemini-2.5-flash` | Google | Faster, good for search |
-| `gemini-1.5-pro` | Google | Previous generation |
-| `claude-sonnet-4` | Anthropic | Claude 4 Sonnet |
-| `claude-3-5-sonnet-20241022` | Anthropic | Claude 3.5 Sonnet |
+| Model                        | Provider  | Description             |
+| ---------------------------- | --------- | ----------------------- |
+| `gemini-2.5-pro`             | Google    | Most capable (default)  |
+| `gemini-2.5-flash`           | Google    | Faster, good for search |
+| `gemini-1.5-pro`             | Google    | Previous generation     |
+| `claude-sonnet-4`            | Anthropic | Claude 4 Sonnet         |
+| `claude-3-5-sonnet-20241022` | Anthropic | Claude 3.5 Sonnet       |
 
 ## Contributing
 

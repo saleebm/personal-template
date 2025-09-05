@@ -59,15 +59,15 @@ bun run db:seed
 ### Basic Usage
 
 ```typescript
-import { prisma } from '@repo/database';
+import { prisma } from "@repo/database";
 
 // Create a prompt
 const prompt = await prisma.prompt.create({
   data: {
-    rawPrompt: 'Fix the login bug',
-    instruction: 'Debug and fix the authentication issue',
-    workflowType: 'bug',
-    complexity: 'medium',
+    rawPrompt: "Fix the login bug",
+    instruction: "Debug and fix the authentication issue",
+    workflowType: "bug",
+    complexity: "medium",
     score: 85,
   },
 });
@@ -90,7 +90,7 @@ const promptWithCategories = await prisma.prompt.findUnique({
 Until pgvector is fully configured, vectors are stored as JSON:
 
 ```typescript
-import { vectorUtils } from '@repo/database';
+import { vectorUtils } from "@repo/database";
 
 // Store a vector
 const embedding = vectorUtils.toJson(myVector); // myVector: number[768]
@@ -115,15 +115,15 @@ const neighbors = vectorUtils.findNearestNeighbors(queryVector, vectors, 5);
 ### Database Health Check
 
 ```typescript
-import { checkDatabaseHealth, checkPgVectorExtension } from '@repo/database';
+import { checkDatabaseHealth, checkPgVectorExtension } from "@repo/database";
 
 // Check database connection
 const health = await checkDatabaseHealth();
-console.log('Database connected:', health.connected);
+console.log("Database connected:", health.connected);
 
 // Check pgvector status
 const pgvector = await checkPgVectorExtension();
-console.log('pgvector installed:', pgvector.installed);
+console.log("pgvector installed:", pgvector.installed);
 ```
 
 ## Scripts
@@ -184,7 +184,7 @@ All database operations are fully type-safe thanks to Prisma's generated client:
 ```typescript
 // Type-safe queries
 const prompt = await prisma.prompt.findUnique({
-  where: { id: 'abc123' }, // TypeScript knows 'id' is a string
+  where: { id: "abc123" }, // TypeScript knows 'id' is a string
   select: {
     instruction: true, // TypeScript knows available fields
     workflow: {
@@ -209,11 +209,13 @@ bun test
 If you see warnings about pgvector, install it:
 
 **macOS:**
+
 ```bash
 brew install pgvector
 ```
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt install postgresql-16-pgvector
 ```

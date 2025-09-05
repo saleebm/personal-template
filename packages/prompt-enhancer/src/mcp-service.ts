@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
-import type { Tool } from 'ai';
-import { z } from 'zod';
+import fs from "fs";
+import path from "path";
+import { execSync } from "child_process";
+import type { Tool } from "ai";
+import { z } from "zod";
 
 export interface MCPServerConfig {
   command: string;
@@ -28,16 +28,24 @@ export class MCPService {
    */
   private loadDefaultConfig(): void {
     try {
-      const defaultConfigPath = path.join(this.projectPath, '.ruler', 'mcp.json');
+      const defaultConfigPath = path.join(
+        this.projectPath,
+        ".ruler",
+        "mcp.json",
+      );
       if (fs.existsSync(defaultConfigPath)) {
-        const configContent = fs.readFileSync(defaultConfigPath, 'utf-8');
+        const configContent = fs.readFileSync(defaultConfigPath, "utf-8");
         this.config = JSON.parse(configContent) as MCPConfiguration;
-        console.log(`📡 Loaded MCP configuration with ${Object.keys(this.config.mcpServers).length} servers`);
+        console.log(
+          `📡 Loaded MCP configuration with ${Object.keys(this.config.mcpServers).length} servers`,
+        );
       } else {
-        console.warn('⚠️ No default MCP configuration found at .ruler/mcp.json');
+        console.warn(
+          "⚠️ No default MCP configuration found at .ruler/mcp.json",
+        );
       }
     } catch (error) {
-      console.error('❌ Failed to load MCP configuration:', error);
+      console.error("❌ Failed to load MCP configuration:", error);
     }
   }
 
@@ -49,11 +57,14 @@ export class MCPService {
       if (!fs.existsSync(configPath)) {
         throw new Error(`MCP configuration file not found: ${configPath}`);
       }
-      const configContent = fs.readFileSync(configPath, 'utf-8');
+      const configContent = fs.readFileSync(configPath, "utf-8");
       this.config = JSON.parse(configContent) as MCPConfiguration;
       console.log(`📡 Loaded custom MCP configuration from ${configPath}`);
     } catch (error) {
-      console.error(`❌ Failed to load custom MCP configuration from ${configPath}:`, error);
+      console.error(
+        `❌ Failed to load custom MCP configuration from ${configPath}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -87,81 +98,93 @@ export class MCPService {
     const tools: Record<string, Tool> = {};
 
     // npm-search tool
-    if (this.config?.mcpServers['npm-search']) {
-      tools['npm_search'] = {
-        description: 'Search for npm packages to find relevant libraries and tools',
+    if (this.config?.mcpServers["npm-search"]) {
+      tools["npm_search"] = {
+        description:
+          "Search for npm packages to find relevant libraries and tools",
         inputSchema: z.object({
-          query: z.string().describe('The search query for npm packages'),
-          limit: z.number().default(10).describe('Maximum number of results to return')
+          query: z.string().describe("The search query for npm packages"),
+          limit: z
+            .number()
+            .default(10)
+            .describe("Maximum number of results to return"),
         }),
         execute: async ({ query, limit = 10 }) => {
           try {
             // Execute npm search command
-            if (!this.config) throw new Error('MCP configuration not loaded');
-            const npmConfig = this.config.mcpServers['npm-search'];
-            if (!npmConfig) throw new Error('npm-search server configuration not found');
-            const command = `${npmConfig.command} ${npmConfig.args.join(' ')} search "${query}"`;
-            const result = execSync(command, { encoding: 'utf-8' });
-            
+            if (!this.config) throw new Error("MCP configuration not loaded");
+            const npmConfig = this.config.mcpServers["npm-search"];
+            if (!npmConfig)
+              throw new Error("npm-search server configuration not found");
+            const command = `${npmConfig.command} ${npmConfig.args.join(" ")} search "${query}"`;
+            const result = execSync(command, { encoding: "utf-8" });
+
             // Parse and return results
-            const lines = result.split('\n').filter(line => line.trim());
-            const packages = lines.slice(0, limit).map(line => {
+            const lines = result.split("\n").filter((line) => line.trim());
+            const packages = lines.slice(0, limit).map((line) => {
               const parts = line.split(/\s+/);
               return {
                 name: parts[0],
-                description: parts.slice(1).join(' ')
+                description: parts.slice(1).join(" "),
               };
             });
-            
+
             return {
               success: true,
               packages,
               query,
-              count: packages.length
+              count: packages.length,
             };
           } catch (error) {
-            console.error('npm-search tool error:', error);
+            console.error("npm-search tool error:", error);
             return {
               success: false,
-              error: error instanceof Error ? error.message : 'Unknown error',
-              query
+              error: error instanceof Error ? error.message : "Unknown error",
+              query,
             };
           }
-        }
+        },
       };
     }
 
     // GitHub search tool
-    if (this.config?.mcpServers['ai-dr-github-search']) {
-      tools['github_search'] = {
-        description: 'Search GitHub repositories for code, issues, and documentation',
+    if (this.config?.mcpServers["ai-dr-github-search"]) {
+      tools["github_search"] = {
+        description:
+          "Search GitHub repositories for code, issues, and documentation",
         inputSchema: z.object({
-          query: z.string().describe('The search query for GitHub'),
-          type: z.enum(['repositories', 'code', 'issues', 'users']).default('repositories').describe('Type of search to perform'),
-          limit: z.number().default(10).describe('Maximum number of results')
+          query: z.string().describe("The search query for GitHub"),
+          type: z
+            .enum(["repositories", "code", "issues", "users"])
+            .default("repositories")
+            .describe("Type of search to perform"),
+          limit: z.number().default(10).describe("Maximum number of results"),
         }),
-        execute: async ({ query, type = 'repositories', limit = 10 }) => {
+        execute: async ({ query, type = "repositories", limit = 10 }) => {
           try {
             // Note: This is a placeholder implementation
             // In a real implementation, you would properly invoke the MCP server
-            console.log(`🔍 GitHub search for "${query}" (type: ${type}, limit: ${limit})`);
-            
+            console.log(
+              `🔍 GitHub search for "${query}" (type: ${type}, limit: ${limit})`,
+            );
+
             return {
               success: true,
               query,
               type,
               results: [],
-              message: 'GitHub search MCP server integration pending full implementation'
+              message:
+                "GitHub search MCP server integration pending full implementation",
             };
           } catch (error) {
-            console.error('github-search tool error:', error);
+            console.error("github-search tool error:", error);
             return {
               success: false,
-              error: error instanceof Error ? error.message : 'Unknown error',
-              query
+              error: error instanceof Error ? error.message : "Unknown error",
+              query,
             };
           }
-        }
+        },
       };
     }
 
@@ -174,7 +197,7 @@ export class MCPService {
   public hasServers(serverNames: string[]): boolean {
     if (!this.config) return false;
     const config = this.config;
-    return serverNames.every(name => name in config.mcpServers);
+    return serverNames.every((name) => name in config.mcpServers);
   }
 
   /**

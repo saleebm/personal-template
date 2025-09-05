@@ -1,7 +1,7 @@
-import { promises as fs } from 'fs';
-import { join, relative } from 'path';
-import { findProjectRoot } from './utils.js';
-import type { AgentInfo, AgentResolutionResult } from './types.js';
+import { promises as fs } from "fs";
+import { join, relative } from "path";
+import { findProjectRoot } from "./utils.js";
+import type { AgentInfo, AgentResolutionResult } from "./types.js";
 
 export class AgentResolver {
   private projectPath: string;
@@ -9,7 +9,7 @@ export class AgentResolver {
   private readonly AGENT_PATTERNS = [
     /\b(?:use|with|using)\s+([a-z-]+(?:\-[a-z-]+)*(?:\-engineer|\-agent|\-orchestrator|\-architect|\-resolver|\-reviewer))/gi,
     /\@([a-z-]+(?:\-[a-z-]+)*(?:\-engineer|\-agent|\-orchestrator|\-architect|\-resolver|\-reviewer))/gi,
-    /(?:nextjs|typescript|backend|frontend|ui|api|workflow|ai-dr)[\-\s]*(engineer|agent|orchestrator|architect|resolver|reviewer|challenger)/gi
+    /(?:nextjs|typescript|backend|frontend|ui|api|workflow|ai-dr)[\-\s]*(engineer|agent|orchestrator|architect|resolver|reviewer|challenger)/gi,
   ];
 
   constructor(projectPath: string) {
@@ -19,29 +19,36 @@ export class AgentResolver {
   async resolveAgentMentions(prompt: string): Promise<AgentResolutionResult> {
     const projectRoot = findProjectRoot(this.projectPath);
     const availableAgents = await this.loadAvailableAgents(projectRoot);
-    
+
     let processedPrompt = prompt;
     const resolvedAgents: AgentInfo[] = [];
-    
+
     // Detect potential agent mentions using patterns
     const potentialAgents = this.detectAgentMentions(prompt);
-    
+
     // Try to match potential agents to available agents
     for (const mention of potentialAgents) {
       const matchedAgent = this.findBestAgentMatch(mention, availableAgents);
-      if (matchedAgent && !resolvedAgents.find(a => a.name === matchedAgent.name)) {
+      if (
+        matchedAgent &&
+        !resolvedAgents.find((a) => a.name === matchedAgent.name)
+      ) {
         resolvedAgents.push(matchedAgent);
-        
+
         // Replace the mention with the proper @agent-{name} format
         const agentReference = `@agent-${matchedAgent.name}`;
-        processedPrompt = this.replaceMentionInPrompt(processedPrompt, mention, agentReference);
+        processedPrompt = this.replaceMentionInPrompt(
+          processedPrompt,
+          mention,
+          agentReference,
+        );
       }
     }
-    
+
     return {
       originalPrompt: prompt,
       processedPrompt,
-      resolvedAgents
+      resolvedAgents,
     };
   }
 
@@ -52,17 +59,17 @@ export class AgentResolver {
     }
 
     const agents: AgentInfo[] = [];
-    const agentsDir = join(projectRoot, '.claude/agents');
+    const agentsDir = join(projectRoot, ".claude/agents");
 
     try {
       await fs.access(agentsDir);
       const files = await fs.readdir(agentsDir);
-      
+
       for (const file of files) {
-        if (file.endsWith('.md')) {
+        if (file.endsWith(".md")) {
           try {
             const filePath = join(agentsDir, file);
-            const content = await fs.readFile(filePath, 'utf-8');
+            const content = await fs.readFile(filePath, "utf-8");
             const agentInfo = this.parseAgentFile(content, filePath);
             if (agentInfo) {
               agents.push(agentInfo);
@@ -89,25 +96,27 @@ export class AgentResolver {
 
     const frontmatter = frontmatterMatch[1];
     const nameMatch = frontmatter.match(/^name:\s*(.+)$/m);
-    
+
     // For description, handle both single line and multi-line formats
-    let descriptionMatch = frontmatter.match(/^description:\s*([\s\S]*?)(?=\n[a-zA-Z_-]+:|$)/m);
-    
+    let descriptionMatch = frontmatter.match(
+      /^description:\s*([\s\S]*?)(?=\n[a-zA-Z_-]+:|$)/m,
+    );
+
     if (!nameMatch || !nameMatch[1]) {
       return null;
     }
 
-    let description = '';
+    let description = "";
     if (descriptionMatch && descriptionMatch[1]) {
       // Clean up the description by removing excessive newlines and escape sequences
       description = descriptionMatch[1]
-        .replace(/\\n/g, ' ')
-        .replace(/\n\s*/g, ' ')
+        .replace(/\\n/g, " ")
+        .replace(/\n\s*/g, " ")
         .trim();
-      
+
       // Truncate long descriptions for readability
       if (description.length > 200) {
-        description = description.substring(0, 200) + '...';
+        description = description.substring(0, 200) + "...";
       }
     }
 
@@ -115,23 +124,23 @@ export class AgentResolver {
     return {
       name: agentName,
       description: description || `Agent: ${agentName}`,
-      filePath
+      filePath,
     };
   }
 
   private detectAgentMentions(prompt: string): string[] {
     const mentions = new Set<string>();
-    
+
     // First pass: Look for known full agent names (most specific)
     const knownAgentTerms = [
-      'nextjs-ui-api-engineer',
-      'typescript-error-resolver', 
-      'backend-typescript-architect',
-      'senior-code-reviewer',
-      'ai-dr-workflow-orchestrator',
-      'ai-dr-challenger',
-      'principal-engineer',
-      'playwright-test-engineer'
+      "nextjs-ui-api-engineer",
+      "typescript-error-resolver",
+      "backend-typescript-architect",
+      "senior-code-reviewer",
+      "ai-dr-workflow-orchestrator",
+      "ai-dr-challenger",
+      "principal-engineer",
+      "playwright-test-engineer",
     ];
 
     const foundFullNames = [];
@@ -148,13 +157,16 @@ export class AgentResolver {
       for (const match of matches) {
         if (match[1]) {
           const mention = match[1].toLowerCase();
-          
+
           // Skip if this mention is a substring of an already found full agent name
-          const isSubstring = foundFullNames.some(fullName => 
-            fullName.toLowerCase().includes(mention) && fullName.toLowerCase() !== mention
+          const isSubstring = foundFullNames.some(
+            (fullName) =>
+              fullName.toLowerCase().includes(mention) &&
+              fullName.toLowerCase() !== mention,
           );
-          
-          if (!isSubstring && mention.length > 4) { // Avoid very short mentions
+
+          if (!isSubstring && mention.length > 4) {
+            // Avoid very short mentions
             mentions.add(mention);
           }
         }
@@ -164,28 +176,33 @@ export class AgentResolver {
     return Array.from(mentions);
   }
 
-  private findBestAgentMatch(mention: string, availableAgents: AgentInfo[]): AgentInfo | null {
+  private findBestAgentMatch(
+    mention: string,
+    availableAgents: AgentInfo[],
+  ): AgentInfo | null {
     // Direct name match (highest priority)
-    const directMatch = availableAgents.find(agent => 
-      agent.name.toLowerCase() === mention.toLowerCase()
+    const directMatch = availableAgents.find(
+      (agent) => agent.name.toLowerCase() === mention.toLowerCase(),
     );
     if (directMatch) {
       return directMatch;
     }
 
     // Exact substring match in agent name (e.g., "nextjs-ui-api-engineer" contains "nextjs-ui-api-engineer")
-    const exactSubstringMatch = availableAgents.find(agent =>
-      agent.name.toLowerCase().includes(mention.toLowerCase()) && 
-      mention.toLowerCase().length > 5 // Avoid matching very short strings like "ui" or "api"
+    const exactSubstringMatch = availableAgents.find(
+      (agent) =>
+        agent.name.toLowerCase().includes(mention.toLowerCase()) &&
+        mention.toLowerCase().length > 5, // Avoid matching very short strings like "ui" or "api"
     );
     if (exactSubstringMatch) {
       return exactSubstringMatch;
     }
 
     // Prefix match (e.g., "nextjs" matches "nextjs-ui-api-engineer" but only if at the start)
-    const prefixMatch = availableAgents.find(agent =>
-      agent.name.toLowerCase().startsWith(mention.toLowerCase() + '-') &&
-      mention.toLowerCase().length > 4 // Avoid very short prefixes
+    const prefixMatch = availableAgents.find(
+      (agent) =>
+        agent.name.toLowerCase().startsWith(mention.toLowerCase() + "-") &&
+        mention.toLowerCase().length > 4, // Avoid very short prefixes
     );
     if (prefixMatch) {
       return prefixMatch;
@@ -194,23 +211,27 @@ export class AgentResolver {
     return null;
   }
 
-  private replaceMentionInPrompt(prompt: string, mention: string, replacement: string): string {
+  private replaceMentionInPrompt(
+    prompt: string,
+    mention: string,
+    replacement: string,
+  ): string {
     // Escape special characters in the mention for regex
-    const escapedMention = mention.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    
+    const escapedMention = mention.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
     // Replace various forms of the mention with the standardized format
     // Be more specific to avoid multiple replacements
     const patterns = [
       // Handle @mentions first (most specific)
-      new RegExp(`@${escapedMention}\\b`, 'gi'),
+      new RegExp(`@${escapedMention}\\b`, "gi"),
       // Handle "use/with/using" + agent name
-      new RegExp(`\\b(?:use|with|using)\\s+${escapedMention}\\b`, 'gi'),
+      new RegExp(`\\b(?:use|with|using)\\s+${escapedMention}\\b`, "gi"),
       // Handle plain mentions (but only if not already replaced)
-      new RegExp(`\\b${escapedMention}\\b(?!-)`, 'gi') // Avoid matching already processed @agent-xxx
+      new RegExp(`\\b${escapedMention}\\b(?!-)`, "gi"), // Avoid matching already processed @agent-xxx
     ];
 
     let result = prompt;
-    
+
     // Apply replacements in order of specificity
     for (const pattern of patterns) {
       if (pattern.test(result)) {

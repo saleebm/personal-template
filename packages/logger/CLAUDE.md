@@ -1,43 +1,50 @@
 # Logger Package - Claude Instructions
 
 ## Overview
+
 Server-side logging system with file rotation, designed to work seamlessly on both server and client environments.
 
 ## Quick Start
 
 ```typescript
-import { logger } from '@repo/logger';
+import { logger } from "@repo/logger";
 
-logger.info('Starting application');
-logger.error('Error occurred', error);
-logger.logPerformance('Operation completed', startTime);
+logger.info("Starting application");
+logger.error("Error occurred", error);
+logger.logPerformance("Operation completed", startTime);
 ```
 
 ## Key Features
 
 ### File Rotation
+
 - **Daily rotation**: New file each day
 - **Size limit**: 10MB default per file
 - **Compression**: Automatic gzip of old files
 - **Retention**: 30 days of logs by default
 
 ### Dual Streams
+
 - `app.log`: All log levels
 - `error.log`: Error and fatal only
 
 ### Client-Safe
+
 - Server: Full file logging
 - Client: Console only (no errors)
 
 ## Important Notes
 
 ### Environment Detection
+
 ```typescript
-const isServer = typeof window === 'undefined';
+const isServer = typeof window === "undefined";
 ```
+
 File operations only run on server-side.
 
 ### Log Levels
+
 - `debug`: Development details
 - `info`: General information
 - `warn`: Warnings
@@ -45,35 +52,40 @@ File operations only run on server-side.
 - `fatal`: Critical failures
 
 ### Performance Logging
+
 Automatically captures:
+
 - Duration (milliseconds)
 - Memory usage (heap)
 
 ## Common Patterns
 
 ### Module-Specific Logger
+
 ```typescript
-const dbLogger = logger.child('database');
-dbLogger.info('Query executed');
+const dbLogger = logger.child("database");
+dbLogger.info("Query executed");
 // Output: [database] Query executed
 ```
 
 ### Error Handling
+
 ```typescript
 try {
   // operation
 } catch (error) {
-  logger.error('Operation failed', error);
+  logger.error("Operation failed", error);
   // Automatically extracts stack trace
 }
 ```
 
 ### API Request Logging
+
 ```typescript
 const startTime = Date.now();
-logger.info('API request', { method, path });
+logger.info("API request", { method, path });
 // ... handle request
-logger.logPerformance('Request completed', startTime, { status });
+logger.logPerformance("Request completed", startTime, { status });
 ```
 
 ## File Structure
@@ -90,6 +102,7 @@ logs/
 ## Configuration
 
 ### Via Environment
+
 ```env
 LOG_LEVEL=debug        # Minimum level to log
 LOG_CONSOLE=true       # Console output
@@ -98,23 +111,26 @@ NODE_ENV=development   # Environment
 ```
 
 ### Via Code
+
 ```typescript
 const customLogger = new Logger({
-  logDir: './custom-logs',
-  logLevel: 'debug',
-  maxFileSize: '50M',
-  maxFiles: 60
+  logDir: "./custom-logs",
+  logLevel: "debug",
+  maxFileSize: "50M",
+  maxFiles: 60,
 });
 ```
 
 ## Integration Points
 
 ### Next.js
+
 - Use in API routes
 - Use in server components
 - Client components: console only
 
 ### Express/Fastify
+
 - Middleware for request logging
 - Error handler integration
 
@@ -136,12 +152,15 @@ const customLogger = new Logger({
 ## Maintenance
 
 ### Log Cleanup
+
 Old logs are automatically removed after `maxFiles` limit.
 
 ### Manual Rotation
+
 Restart application to force rotation.
 
 ### Monitoring
+
 Check log directory size periodically.
 
 ## Security

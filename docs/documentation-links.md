@@ -2,7 +2,6 @@
 
 Just a list of links that may or may not be useful.
 
-
 - Git Diff View
   - [git-diff-view Documentation](https://github.com/MrWangJustToDo/git-diff-view)
   - Package: `@git-diff-view/react` for React components
@@ -53,7 +52,7 @@ Just a list of links that may or may not be useful.
     - Component testing and watch mode are unsupported
     - Basic test execution works, advanced features may not
     - Use simple configuration or avoid config files when possible
-  - **MCP Integration**: 
+  - **MCP Integration**:
     - [Playwright MCP Testing Flow](../docs/playwright-mcp-testing-flow.md) - Our internal MCP-assisted testing workflow
     - [Playwright Test Engineer Subagent](../.claude/agents/playwright-test-engineer.md) - Specialized testing agent
 

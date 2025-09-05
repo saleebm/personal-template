@@ -6,14 +6,14 @@
 - Use `unknown` instead of `any` for unknown types
 - Always use `"strict": true` in tsconfig.json
 - Use proper type guards
-- Leverage discriminated unions  
+- Leverage discriminated unions
 - Use `readonly` where applicable
 - Use strict null checks to prevent null pointer exceptions
 
 ## Type Organization
 
 - Group related types together
-- Export types from a central location  
+- Export types from a central location
 - Keep type definitions close to usage
 - Use library types for external dependencies (e.g., `@prisma/client` exports types from generated client files, use those instead of redefining them)
 - Prefer type inference where possible
@@ -33,8 +33,9 @@
   - ✅ `import { cn } from '@workspace/ui/lib/utils'`
   - ❌ `import { cn } from '../lib/utils'`
 - Prefer type imports for type-only imports:
+
 ```typescript
-import type { SomeType } from '@workspace/ui/types';
+import type { SomeType } from "@workspace/ui/types";
 ```
 
 ## Function Patterns
@@ -42,11 +43,12 @@ import type { SomeType } from '@workspace/ui/types';
 Always use inline interfaces with function parameters:
 
 ✅ **Good:**
+
 ```typescript
 export function processData({
   id,
   name,
-  options
+  options,
 }: {
   id: string;
   name: string;
@@ -57,6 +59,7 @@ export function processData({
 ```
 
 ❌ **Bad:**
+
 ```typescript
 interface ProcessDataParams {
   id: string;
@@ -80,6 +83,7 @@ interface ProcessDataParams {
 - Leverage utility types
 - Keep type definitions DRY
 - Environment variables should be typed in `env.d.ts` within and used with bracket notation:
+
 ```typescript
 // env.d.ts
 declare global {
@@ -93,13 +97,15 @@ declare global {
 ```
 
 ✅ **DO:**
+
 ```typescript
-process.env['VARIABLE_NAME']
+process.env["VARIABLE_NAME"];
 ```
 
 ❌ **DON'T:**
+
 ```typescript
-process.env.VARIABLE_NAME  
+process.env.VARIABLE_NAME;
 ```
 
 ## Configuration

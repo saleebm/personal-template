@@ -1,6 +1,6 @@
-import { promises as fs } from 'fs';
-import { join, relative } from 'path';
-import { findProjectRoot } from './utils.js';
+import { promises as fs } from "fs";
+import { join, relative } from "path";
+import { findProjectRoot } from "./utils.js";
 
 export interface CodebaseContext {
   files: Array<{ path: string; summary: string }>;
@@ -14,14 +14,14 @@ export class ContextAnalyzer {
   private projectPath: string;
   private cache: Map<string, CodebaseContext> = new Map();
   private readonly IGNORE_PATTERNS = [
-    'node_modules',
-    '.git',
-    'dist',
-    'build',
-    '.next',
-    'coverage',
-    '.turbo',
-    '*.log'
+    "node_modules",
+    ".git",
+    "dist",
+    "build",
+    ".next",
+    "coverage",
+    ".turbo",
+    "*.log",
   ];
 
   constructor(projectPath: string) {
@@ -38,29 +38,29 @@ export class ContextAnalyzer {
     const context: CodebaseContext = {
       files: [],
       dependencies: {},
-      technicalStack: []
+      technicalStack: [],
     };
 
     try {
       // Load project rules and agent instructions
       await this.loadProjectRules(context);
-      
+
       // Analyze package.json
       await this.analyzePackageJson(context);
-      
+
       // Find relevant files based on prompt keywords
       const keywords = this.extractKeywords(prompt);
       const relevantFiles = await this.findRelevantFiles(keywords);
-      
-      context.files = relevantFiles.slice(0, 10).map(path => ({
+
+      context.files = relevantFiles.slice(0, 10).map((path) => ({
         path: relative(this.projectPath, path),
-        summary: `File: ${relative(this.projectPath, path)}`
+        summary: `File: ${relative(this.projectPath, path)}`,
       }));
 
       // Cache result
       this.cache.set(cacheKey, context);
     } catch (error) {
-      console.error('Context analysis failed:', error);
+      console.error("Context analysis failed:", error);
     }
 
     return context;
@@ -70,11 +70,11 @@ export class ContextAnalyzer {
     try {
       // Find the project root (in case we're running from a subdirectory)
       const projectRoot = findProjectRoot(this.projectPath);
-      
+
       // Load AGENTS.md (comprehensive project rules)
-      const agentsPath = join(projectRoot, 'AGENTS.md');
+      const agentsPath = join(projectRoot, "AGENTS.md");
       try {
-        const agentsContent = await fs.readFile(agentsPath, 'utf-8');
+        const agentsContent = await fs.readFile(agentsPath, "utf-8");
         // If content is very long, include full content but add note about it being comprehensive
         if (agentsContent.length > 10000) {
           context.agentInstructions = `${agentsContent}
@@ -85,9 +85,9 @@ NOTE: This is a comprehensive rule set. The enhanced prompt should incorporate t
         }
       } catch (error) {
         // Try CLAUDE.md as fallback
-        const claudePath = join(projectRoot, 'CLAUDE.md');
+        const claudePath = join(projectRoot, "CLAUDE.md");
         try {
-          const claudeContent = await fs.readFile(claudePath, 'utf-8');
+          const claudeContent = await fs.readFile(claudePath, "utf-8");
           context.agentInstructions = claudeContent;
         } catch (error) {
           // No agent instructions found
@@ -96,17 +96,17 @@ NOTE: This is a comprehensive rule set. The enhanced prompt should incorporate t
 
       // Load additional project-specific rule files
       const ruleFiles = [
-        '.ai-dr/rules.md',
-        'docs/rules.md', 
-        'PROJECT_GUIDELINES.md',
-        'CONTRIBUTING.md'
+        ".ai-dr/rules.md",
+        "docs/rules.md",
+        "PROJECT_GUIDELINES.md",
+        "CONTRIBUTING.md",
       ];
 
-      let projectRulesContent = '';
+      let projectRulesContent = "";
       for (const ruleFile of ruleFiles) {
         try {
           const rulePath = join(projectRoot, ruleFile);
-          const content = await fs.readFile(rulePath, 'utf-8');
+          const content = await fs.readFile(rulePath, "utf-8");
           projectRulesContent += `\n\n## Rules from ${ruleFile}\n\n${content}`;
         } catch (error) {
           // Rule file doesn't exist, continue
@@ -116,54 +116,61 @@ NOTE: This is a comprehensive rule set. The enhanced prompt should incorporate t
       if (projectRulesContent.trim()) {
         context.projectRules = projectRulesContent.trim();
       }
-
     } catch (error) {
-      console.error('Failed to load project rules:', error);
+      console.error("Failed to load project rules:", error);
     }
   }
 
   private async analyzePackageJson(context: CodebaseContext): Promise<void> {
     try {
-      const packagePath = join(this.projectPath, 'package.json');
-      const content = await fs.readFile(packagePath, 'utf-8');
+      const packagePath = join(this.projectPath, "package.json");
+      const content = await fs.readFile(packagePath, "utf-8");
       const pkg = JSON.parse(content);
-      
+
       context.dependencies = {
         ...pkg.dependencies,
-        ...pkg.devDependencies
+        ...pkg.devDependencies,
       };
 
       // Detect technical stack
       const deps = Object.keys(context.dependencies);
-      if (deps.some(d => d.includes('next'))) context.technicalStack.push('Next.js');
-      if (deps.some(d => d.includes('react'))) context.technicalStack.push('React');
-      if (deps.some(d => d.includes('express'))) context.technicalStack.push('Express');
-      if (deps.some(d => d.includes('prisma'))) context.technicalStack.push('Prisma');
-      if (deps.some(d => d.includes('typescript'))) context.technicalStack.push('TypeScript');
-      
+      if (deps.some((d) => d.includes("next")))
+        context.technicalStack.push("Next.js");
+      if (deps.some((d) => d.includes("react")))
+        context.technicalStack.push("React");
+      if (deps.some((d) => d.includes("express")))
+        context.technicalStack.push("Express");
+      if (deps.some((d) => d.includes("prisma")))
+        context.technicalStack.push("Prisma");
+      if (deps.some((d) => d.includes("typescript")))
+        context.technicalStack.push("TypeScript");
+
       // Always add Bun for this project
-      context.technicalStack.push('Bun');
+      context.technicalStack.push("Bun");
     } catch (error) {
       // Package.json not found or invalid
     }
   }
 
   private extractKeywords(prompt: string): string[] {
-    const words = prompt.toLowerCase()
+    const words = prompt
+      .toLowerCase()
       .split(/\s+/)
-      .filter(w => w.length > 3)
-      .filter(w => !/^(the|and|for|with|from|that|this|have|will|been)$/.test(w));
-    
+      .filter((w) => w.length > 3)
+      .filter(
+        (w) => !/^(the|and|for|with|from|that|this|have|will|been)$/.test(w),
+      );
+
     return [...new Set(words)];
   }
 
   private async findRelevantFiles(keywords: string[]): Promise<string[]> {
     const files: string[] = [];
-    
+
     try {
       await this.searchDirectory(this.projectPath, (filePath) => {
         const relativePath = relative(this.projectPath, filePath).toLowerCase();
-        
+
         // Check if path contains any keywords
         for (const keyword of keywords) {
           if (relativePath.includes(keyword)) {
@@ -171,31 +178,33 @@ NOTE: This is a comprehensive rule set. The enhanced prompt should incorporate t
             return files.length < 20; // Limit results
           }
         }
-        
+
         return true; // Continue searching
       });
     } catch (error) {
-      console.error('File search failed:', error);
+      console.error("File search failed:", error);
     }
-    
+
     return files;
   }
 
   private async searchDirectory(
     dir: string,
-    callback: (path: string) => boolean
+    callback: (path: string) => boolean,
   ): Promise<void> {
     try {
       const entries = await fs.readdir(dir, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         // Skip ignored patterns
-        if (this.IGNORE_PATTERNS.some(pattern => entry.name.includes(pattern))) {
+        if (
+          this.IGNORE_PATTERNS.some((pattern) => entry.name.includes(pattern))
+        ) {
           continue;
         }
-        
+
         const fullPath = join(dir, entry.name);
-        
+
         if (entry.isDirectory()) {
           await this.searchDirectory(fullPath, callback);
         } else if (entry.isFile() && this.isSourceFile(entry.name)) {
@@ -209,7 +218,16 @@ NOTE: This is a comprehensive rule set. The enhanced prompt should incorporate t
   }
 
   private isSourceFile(filename: string): boolean {
-    const extensions = ['.ts', '.tsx', '.js', '.jsx', '.json', '.yaml', '.yml', '.md'];
-    return extensions.some(ext => filename.endsWith(ext));
+    const extensions = [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".jsx",
+      ".json",
+      ".yaml",
+      ".yml",
+      ".md",
+    ];
+    return extensions.some((ext) => filename.endsWith(ext));
   }
 }

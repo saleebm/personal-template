@@ -47,11 +47,13 @@ PROJECT_NAME="my-app" DB_PASSWORD="mypassword" ./scripts/setup.sh --non-interact
 ```
 
 **Setup Options:**
+
 - `--non-interactive`: Run without prompts (uses environment variables or defaults)
 - `--skip-database`: Skip database setup entirely
 - `--help`: Show all available options
 
 **Environment Variables (for non-interactive mode):**
+
 - `PROJECT_NAME`: Project name (default: my-app)
 - `DB_HOST`: Database host (default: localhost)
 - `DB_PORT`: Database port (default: 5432)
@@ -64,6 +66,7 @@ PROJECT_NAME="my-app" DB_PASSWORD="mypassword" ./scripts/setup.sh --non-interact
 - `AI_GATEWAY_API_KEY`: AI Gateway API key
 
 The setup script will:
+
 - ✅ **Backup existing .env files** with timestamps
 - ✅ **Preserve existing environment values** during updates
 - ✅ **Install dependencies** using Bun
@@ -107,6 +110,7 @@ Your app will be available at http://localhost:3000
 Run these commands from the root of the monorepo:
 
 ### Development
+
 - `bun dev` - Start all apps in development mode
 - `bun build` - Build all apps and packages
 - `bun typecheck` - Run TypeScript type checking
@@ -114,6 +118,7 @@ Run these commands from the root of the monorepo:
 - `bun format` - Format code with Prettier
 
 ### Database
+
 - `bun db:generate` - Generate Prisma client
 - `bun db:push` - Push schema changes to database
 - `bun db:migrate:dev` - Create and apply migrations (dev)
@@ -129,7 +134,9 @@ This monorepo includes comprehensive GitHub Actions workflows for continuous int
 ### Workflows
 
 #### 🔄 **CI Pipeline** (`ci.yml`)
+
 Runs on every push and pull request to ensure code quality:
+
 - **Type checking** with TypeScript strict mode
 - **Linting** with ESLint
 - **Testing** with Bun's built-in test runner
@@ -139,7 +146,9 @@ Runs on every push and pull request to ensure code quality:
 - **Caching** for Bun dependencies and Turborepo outputs
 
 #### 🤖 **Claude Code Review** (`claude-code-review.yml`)
+
 Automated AI-powered code review on pull requests:
+
 - Comprehensive analysis of code quality and standards
 - Security vulnerability detection
 - Performance optimization suggestions
@@ -148,7 +157,9 @@ Automated AI-powered code review on pull requests:
 - Test coverage assessment
 
 #### 💬 **Claude Actions** (`claude-actions.yml`)
+
 Interactive AI assistance in issues and PR comments:
+
 - Trigger with `@claude` in comments
 - Helps with code implementation
 - Answers technical questions
@@ -156,7 +167,9 @@ Interactive AI assistance in issues and PR comments:
 - Follows project coding standards
 
 #### ✅ **Deploy Check** (`deploy-check.yml`)
+
 Pre-deployment validation for production readiness:
+
 - Comprehensive validation suite
 - Security scanning
 - Performance baseline checks
@@ -165,7 +178,9 @@ Pre-deployment validation for production readiness:
 - Automated deployment readiness report
 
 #### 🧹 **Maintenance** (`maintenance.yml`)
+
 Weekly automated maintenance tasks:
+
 - Dependency update checks
 - Code quality metrics collection
 - Repository cleanup
@@ -211,6 +226,7 @@ The unified setup script automatically handles environment variable configuratio
 If you prefer to set up manually, create these files from their `.env.example` counterparts:
 
 **Root `.env`** (with variable interpolation):
+
 ```bash
 # Database Configuration
 DB_HOST=localhost
@@ -228,6 +244,7 @@ GEMINI_API_KEY=your_gemini_api_key
 ```
 
 **For Next.js app (`apps/web/.env`)**:
+
 ```bash
 # Database (expanded URL for Next.js compatibility)
 DATABASE_URL=postgresql://postgres:your_password@localhost:5432/your_db_name
@@ -247,11 +264,13 @@ The setup script includes advanced environment file management:
 ## Adding New Packages
 
 1. Create a new directory under `packages/`:
+
 ```bash
 mkdir packages/my-package
 ```
 
 2. Initialize the package:
+
 ```bash
 cd packages/my-package
 bun init
@@ -260,6 +279,7 @@ bun init
 3. Add the package to the workspace in root `package.json`
 
 4. Reference it in your apps:
+
 ```json
 {
   "dependencies": {
@@ -354,6 +374,7 @@ MIT
 ## Acknowledgments
 
 Built with excellent tools from the JavaScript ecosystem:
+
 - [Bun](https://bun.sh)
 - [Turborepo](https://turbo.build)
 - [Next.js](https://nextjs.org)

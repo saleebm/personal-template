@@ -69,18 +69,21 @@ This repository includes comprehensive GitHub Actions workflows for CI/CD, secur
 Configure these secrets in your GitHub repository settings:
 
 #### Essential Secrets
+
 ```bash
 # Claude Code Integration (Required for @claude functionality)
 CLAUDE_CODE_OAUTH_TOKEN=your_claude_oauth_token_here
 ```
 
 **Getting your Claude OAuth Token:**
+
 1. Visit [Claude Code](https://claude.ai/code) and sign in
 2. Go to your account settings
 3. Generate an OAuth token for GitHub Actions
 4. Add it as `CLAUDE_CODE_OAUTH_TOKEN` in your repository secrets
 
 #### Optional Secrets (for enhanced functionality)
+
 ```bash
 # For production deployment
 DEPLOY_TOKEN=ghp_...
@@ -106,6 +109,7 @@ The workflows are configured with the simple OAuth token approach, which provide
 For advanced functionality, you can later upgrade to a GitHub App setup which provides additional benefits:
 
 **GitHub App Benefits:**
+
 - ✅ Higher rate limits
 - ✅ More granular permissions
 - ✅ Can create PRs from forks
@@ -114,11 +118,12 @@ For advanced functionality, you can later upgrade to a GitHub App setup which pr
 - ✅ Organization-wide installation
 
 **How to Add GitHub App Later:**
+
 1. Go to https://github.com/settings/apps/new
 2. Configure basic app information
 3. Set repository permissions:
    - Contents: Read & Write
-   - Issues: Read & Write  
+   - Issues: Read & Write
    - Pull requests: Read & Write
    - Actions: Read (for CI status)
 4. Generate and save private key
@@ -158,7 +163,7 @@ process.env['NEXT_PUBLIC_API_URL']    // Client-exposed
 
 - **Context Awareness**: Includes repository context in prompts
 - **Coding Standards**: Follows guidelines from `CLAUDE.md`
-- **Error Handling**: Provides helpful error messages on failures  
+- **Error Handling**: Provides helpful error messages on failures
 - **Permission Management**: Works with both GitHub Apps and tokens
 - **Timeout Protection**: Prevents runaway executions
 
@@ -195,8 +200,9 @@ Use the GitHub Actions interface to trigger a release:
 ### Manual Workflow Triggers
 
 Most workflows can be triggered manually via the Actions tab:
+
 - Security audits
-- Documentation updates  
+- Documentation updates
 - MCP server testing
 - Full CI pipeline
 
@@ -205,6 +211,7 @@ Most workflows can be triggered manually via the Actions tab:
 ### Workflow Status
 
 All workflows provide detailed step summaries in the GitHub Actions interface:
+
 - ✅ Successful steps with timing
 - ❌ Failed steps with error details
 - ⚠️ Warnings and non-blocking issues
@@ -213,7 +220,7 @@ All workflows provide detailed step summaries in the GitHub Actions interface:
 ### Common Issues
 
 1. **Claude not responding**: Check `CLAUDE_CODE_OAUTH_TOKEN` secret
-2. **Permission errors**: Verify repository access permissions  
+2. **Permission errors**: Verify repository access permissions
 3. **Build failures**: Check for environment variable issues
 4. **Test timeouts**: Review resource-intensive tests
 
@@ -262,6 +269,7 @@ Add debug output to workflows:
 ---
 
 For questions or issues with the GitHub Actions setup, please:
+
 1. Check the [workflow logs](../../actions) for specific errors
 2. Review this documentation for configuration issues
 3. Create an issue with the `ci/cd` label for help

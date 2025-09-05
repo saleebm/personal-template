@@ -26,14 +26,14 @@ The AI SDK has a built-in smooth streaming feature:
 route.ts
 
 import { smoothStream, streamText } from 'ai';
- 
+
 const result = streamText({
-  model,
-  prompt,
-  experimental_transform: smoothStream({
-    delayInMs: 20, // optional: defaults to 10ms
-    chunking: 'line', // optional: defaults to 'word'
-  }),
+model,
+prompt,
+experimental_transform: smoothStream({
+delayInMs: 20, // optional: defaults to 10ms
+chunking: 'line', // optional: defaults to 'word'
+}),
 });
 
 With some more work, we can also make this stream at the character level. To be honest, if you want basic smooth streaming, this is a great way to go.
@@ -52,36 +52,36 @@ Let's build a smooth streaming hook that manages the typewriter animation indepe
 hooks/use-stream.ts
 
 import { useEffect, useRef, useState, useCallback } from 'react'
- 
+
 export const useStream = () => {
-  // 👇 internal buffer of chunks as they arrive from the server
-  const [parts, setParts] = useState<string[]>([])
- 
-  // 👇 the currently visible text
-  const [stream, setStream] = useState('')
- 
-  const frame = useRef<number | null>(null)
-  const lastTimeRef = useRef<number>(0)
-  const streamIndexRef = useRef<number>(0)
-  const isAnimatingRef = useRef(false)
- 
-  const addPart = useCallback((part: string) => {
-    if (part) {
-      setParts((prev) => [...prev, part])
-    }
-  }, [])
- 
-  const reset = useCallback(() => {
-    setParts([])
-    setStream('')
-    streamIndexRef.current = 0
-    if (frame.current) {
-      cancelAnimationFrame(frame.current)
-    }
-    frame.current = null
-    lastTimeRef.current = 0
-    isAnimatingRef.current = false
-  }, [])
+// 👇 internal buffer of chunks as they arrive from the server
+const [parts, setParts] = useState<string[]>([])
+
+// 👇 the currently visible text
+const [stream, setStream] = useState('')
+
+const frame = useRef<number | null>(null)
+const lastTimeRef = useRef<number>(0)
+const streamIndexRef = useRef<number>(0)
+const isAnimatingRef = useRef(false)
+
+const addPart = useCallback((part: string) => {
+if (part) {
+setParts((prev) => [...prev, part])
+}
+}, [])
+
+const reset = useCallback(() => {
+setParts([])
+setStream('')
+streamIndexRef.current = 0
+if (frame.current) {
+cancelAnimationFrame(frame.current)
+}
+frame.current = null
+lastTimeRef.current = 0
+isAnimatingRef.current = false
+}, [])
 
 This hook maintains two separate states:
 
@@ -94,42 +94,42 @@ The smooth streaming happens in the useEffect that handles the typewriter animat
 hooks/use-stream.ts (continued)
 
 useEffect(() => {
-  if (isAnimatingRef.current) return;
- 
-  // 👇 milliseconds per character
-  // 5 works really well for me
-  const typewriterSpeed = 5;
- 
-  const fullText = parts.join("");
- 
-  if (streamIndexRef.current >= fullText.length) {
-    setStream(fullText);
-    return;
-  }
- 
-  isAnimatingRef.current = true;
- 
-  const animate = (time: number) => {
-    if (streamIndexRef.current < fullText.length) {
-      if (time - lastTimeRef.current > typewriterSpeed) {
-        streamIndexRef.current++;
-        setStream(fullText.slice(0, streamIndexRef.current));
-        lastTimeRef.current = time;
-      }
-      frame.current = requestAnimationFrame(animate);
-    } else {
-      isAnimatingRef.current = false;
-    }
-  };
- 
-  frame.current = requestAnimationFrame(animate);
- 
-  return () => {
-    if (frame.current) {
-      cancelAnimationFrame(frame.current);
-    }
-    isAnimatingRef.current = false;
-  };
+if (isAnimatingRef.current) return;
+
+// 👇 milliseconds per character
+// 5 works really well for me
+const typewriterSpeed = 5;
+
+const fullText = parts.join("");
+
+if (streamIndexRef.current >= fullText.length) {
+setStream(fullText);
+return;
+}
+
+isAnimatingRef.current = true;
+
+const animate = (time: number) => {
+if (streamIndexRef.current < fullText.length) {
+if (time - lastTimeRef.current > typewriterSpeed) {
+streamIndexRef.current++;
+setStream(fullText.slice(0, streamIndexRef.current));
+lastTimeRef.current = time;
+}
+frame.current = requestAnimationFrame(animate);
+} else {
+isAnimatingRef.current = false;
+}
+};
+
+frame.current = requestAnimationFrame(animate);
+
+return () => {
+if (frame.current) {
+cancelAnimationFrame(frame.current);
+}
+isAnimatingRef.current = false;
+};
 }, [parts]);
 
 This animation:
@@ -147,15 +147,15 @@ To be totally transparent, you can use this component for any text you want to a
 components/streaming-message.tsx
 
 import { memo, useCallback, useEffect, useRef } from "react";
- 
+
 export const StreamingMessage = memo(
-  ({ text, animate = false }: { text: string; animate?: boolean }) => {
-    const contentRef = useRef("");
-    const { stream, addPart } = useStream();
- 
+({ text, animate = false }: { text: string; animate?: boolean }) => {
+const contentRef = useRef("");
+const { stream, addPart } = useStream();
+
     useEffect(() => {
       if (!text || !animate) return;
- 
+
       if (contentRef.current !== text) {
         const delta = text.slice(contentRef.current.length);
         if (delta) {
@@ -164,11 +164,12 @@ export const StreamingMessage = memo(
         contentRef.current = text;
       }
     }, [text, animate, addPart]);
- 
+
     if (!animate) return text;
- 
+
     return stream ?? text ?? "";
-  },
+
+},
 );
 
 The component is pretty simple. It:
@@ -185,34 +186,36 @@ components/chat.tsx
 import { useChat } from '@ai-sdk/react'
 import { StreamingMessage } from './streaming-message'
 import { useState } from 'react'
- 
+
 export const Chat = () => {
-  const [input, setInput] = useState('')
-  const { messages, sendMessage } = useChat()
- 
-  return (
-    <div>
-      {messages.map((message) => (
-        <div key={message.id}>
-          {message.parts.map((part) => {
-            if (part.type === 'text') {
-              return (
-                <StreamingMessage
-                  text={part.text}
-                  animate={message.role === 'assistant'}
-                />
-              )
-            }
-          })}
-        </div>
-      ))}
- 
+const [input, setInput] = useState('')
+const { messages, sendMessage } = useChat()
+
+return (
+
+<div>
+{messages.map((message) => (
+<div key={message.id}>
+{message.parts.map((part) => {
+if (part.type === 'text') {
+return (
+<StreamingMessage
+text={part.text}
+animate={message.role === 'assistant'}
+/>
+)
+}
+})}
+</div>
+))}
+
       <form onSubmit={() => sendMessage({ text: input })}>
         <input value={input} onChange={(e) => setInput(e.target.value)} />
         <button type="submit">Send</button>
       </form>
     </div>
-  )
+
+)
 }
 
 With this, all AI responses are streamed in character by character. User messages appear instantly since they're already complete.

@@ -1,6 +1,7 @@
 # Database Package - Claude Instructions
 
 ## Overview
+
 This package provides database functionality for AI Dr. using Prisma ORM with PostgreSQL and pgvector support for embeddings.
 
 ## Quick Start
@@ -30,29 +31,35 @@ bun run db:seed
 ## Important Notes
 
 ### pgvector Status
+
 Currently using JSON storage for embeddings until pgvector is confirmed. To enable pgvector:
+
 1. Install pgvector extension in PostgreSQL
 2. Run `CREATE EXTENSION IF NOT EXISTS vector;`
 3. Update schema to use `Unsupported("vector(768)")` instead of `Json`
 4. Run migrations
 
 ### Vector Dimensions
+
 All embeddings must be exactly 768 dimensions (standard for many models).
 
 ### Database Connection
+
 The package uses a singleton pattern for Prisma client to prevent connection exhaustion.
 
 ## Common Tasks
 
 ### Adding a New Model
+
 1. Edit `prisma/schema.prisma`
 2. Run `bun run db:generate` to update client
 3. Run `bun run db:push` to update database
 4. Update seed.ts if needed
 
 ### Working with Embeddings
+
 ```typescript
-import { vectorUtils } from '@repo/database';
+import { vectorUtils } from "@repo/database";
 
 // Store embedding (currently as JSON)
 const embedding = vectorUtils.toJson(vector768);
@@ -65,13 +72,16 @@ const neighbors = vectorUtils.findNearestNeighbors(query, vectors, k);
 ```
 
 ### Database Queries
+
 ```typescript
-import { prisma } from '@repo/database';
+import { prisma } from "@repo/database";
 
 // Always use proper error handling
 try {
   const result = await prisma.prompt.create({
-    data: { /* ... */ }
+    data: {
+      /* ... */
+    },
   });
 } catch (error) {
   // Handle Prisma errors appropriately

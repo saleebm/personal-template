@@ -27,7 +27,9 @@ The Prompt Enhancer SDK is a TypeScript library designed to transform raw, unstr
 ## Overview
 
 ### Problem Statement
+
 Users often write vague or incomplete prompts that result in suboptimal AI responses. The SDK addresses this by:
+
 - Analyzing raw input to extract intent
 - Adding relevant codebase context
 - Structuring prompts according to proven patterns
@@ -35,6 +37,7 @@ Users often write vague or incomplete prompts that result in suboptimal AI respo
 - Providing actionable improvement suggestions
 
 ### Key Benefits
+
 - **Consistency**: All prompts follow a validated structure
 - **Context-Aware**: Automatically includes relevant project information
 - **Quality Assurance**: Built-in validation ensures prompt effectiveness
@@ -52,7 +55,7 @@ graph TB
         FILE[File Input]
         API[API Input]
     end
-    
+
     subgraph "Processing Pipeline"
         PARSE[Parser Module]
         CONTEXT[Context Analyzer]
@@ -60,32 +63,32 @@ graph TB
         OPT[Optimizer]
         VAL[Validator]
     end
-    
+
     subgraph "Storage Layer"
         STORE[Prompt Store]
         CACHE[Context Cache]
         HIST[Usage History]
     end
-    
+
     subgraph "Output Layer"
         JSON[JSON Export]
         YAML[YAML Export]
         MD[Markdown Export]
     end
-    
+
     RAW --> PARSE
     FILE --> PARSE
     API --> PARSE
-    
+
     PARSE --> CONTEXT
     CONTEXT --> STRUCT
     STRUCT --> OPT
     OPT --> VAL
-    
+
     VAL --> STORE
     CONTEXT --> CACHE
     VAL --> HIST
-    
+
     STORE --> JSON
     STORE --> YAML
     STORE --> MD
@@ -93,41 +96,46 @@ graph TB
 
 ### Module Responsibilities
 
-| Module | Responsibility | Key Methods |
-|--------|---------------|-------------|
-| **Parser** | Extract intent and structure from raw text | `parse()`, `detectWorkflowType()`, `extractRequirements()` |
-| **Context Analyzer** | Gather relevant codebase information | `analyze()`, `findRelevantFiles()`, `extractDependencies()` |
-| **Structure Builder** | Create structured prompt format | `build()`, `applyTemplate()`, `generateSections()` |
-| **Optimizer** | Improve clarity and effectiveness | `optimize()`, `clarify()`, `addExamples()` |
-| **Validator** | Ensure quality and completeness | `validate()`, `score()`, `suggest()` |
-| **Storage** | Persist and retrieve prompts | `save()`, `load()`, `search()`, `update()` |
+| Module                | Responsibility                             | Key Methods                                                 |
+| --------------------- | ------------------------------------------ | ----------------------------------------------------------- |
+| **Parser**            | Extract intent and structure from raw text | `parse()`, `detectWorkflowType()`, `extractRequirements()`  |
+| **Context Analyzer**  | Gather relevant codebase information       | `analyze()`, `findRelevantFiles()`, `extractDependencies()` |
+| **Structure Builder** | Create structured prompt format            | `build()`, `applyTemplate()`, `generateSections()`          |
+| **Optimizer**         | Improve clarity and effectiveness          | `optimize()`, `clarify()`, `addExamples()`                  |
+| **Validator**         | Ensure quality and completeness            | `validate()`, `score()`, `suggest()`                        |
+| **Storage**           | Persist and retrieve prompts               | `save()`, `load()`, `search()`, `update()`                  |
 
 ## Core Features
 
 ### 1. Intelligent Parsing
+
 - Natural language processing to extract intent
 - Automatic workflow type detection
 - Requirement extraction from unstructured text
 
 ### 2. Context Awareness
+
 - Codebase analysis for relevant files
 - Dependency detection
 - Technical stack identification
 - Current state assessment
 
 ### 3. Structured Output
+
 - Consistent prompt format
 - Clear separation of instruction, context, and expectations
 - Success criteria generation
 - Constraint identification
 
 ### 4. Validation System
+
 - Quality scoring (0-100)
 - Issue detection with severity levels
 - Actionable improvement suggestions
 - Best practice compliance
 
 ### 5. Storage & Retrieval
+
 - Persistent prompt library
 - Version control
 - Search capabilities
@@ -139,16 +147,22 @@ graph TB
 
 ```typescript
 class PromptEnhancerSDK {
-  constructor(config: PromptEnhancerConfig)
-  
+  constructor(config: PromptEnhancerConfig);
+
   // Core methods
-  enhance(raw: string | RawPromptInput): Promise<StructuredPrompt>
-  validate(prompt: StructuredPrompt): ValidationResult
-  store(prompt: StructuredPrompt): Promise<string>
-  retrieve(id: string): Promise<StructuredPrompt>
-  update(id: string, updates: Partial<StructuredPrompt>): Promise<StructuredPrompt>
-  search(query: PromptSearchQuery): Promise<StructuredPrompt[]>
-  export(prompt: StructuredPrompt, format: 'json' | 'yaml' | 'markdown'): string
+  enhance(raw: string | RawPromptInput): Promise<StructuredPrompt>;
+  validate(prompt: StructuredPrompt): ValidationResult;
+  store(prompt: StructuredPrompt): Promise<string>;
+  retrieve(id: string): Promise<StructuredPrompt>;
+  update(
+    id: string,
+    updates: Partial<StructuredPrompt>,
+  ): Promise<StructuredPrompt>;
+  search(query: PromptSearchQuery): Promise<StructuredPrompt[]>;
+  export(
+    prompt: StructuredPrompt,
+    format: "json" | "yaml" | "markdown",
+  ): string;
 }
 ```
 
@@ -156,10 +170,10 @@ class PromptEnhancerSDK {
 
 ```typescript
 interface PromptEnhancerConfig {
-  projectPath: string;              // Root path of the project
-  outputDir?: string;               // Where to store prompts (default: .prompts/)
-  enableCodebaseContext?: boolean;  // Include code analysis (default: true)
-  maxContextTokens?: number;        // Token limit for context (default: 4000)
+  projectPath: string; // Root path of the project
+  outputDir?: string; // Where to store prompts (default: .prompts/)
+  enableCodebaseContext?: boolean; // Include code analysis (default: true)
+  maxContextTokens?: number; // Token limit for context (default: 4000)
   templateLibrary?: PromptTemplate[]; // Custom templates
 }
 ```
@@ -184,13 +198,13 @@ interface StructuredPrompt {
 }
 
 enum WorkflowType {
-  FEATURE = 'feature',
-  BUG = 'bug',
-  REFACTOR = 'refactor',
-  DOCUMENTATION = 'documentation',
-  RESEARCH = 'research',
-  PR_REVIEW = 'pr_review',
-  GENERAL = 'general'
+  FEATURE = "feature",
+  BUG = "bug",
+  REFACTOR = "refactor",
+  DOCUMENTATION = "documentation",
+  RESEARCH = "research",
+  PR_REVIEW = "pr_review",
+  GENERAL = "general",
 }
 ```
 
@@ -233,20 +247,20 @@ chmod +x scripts/enhance-prompt.ts
 ### Basic Enhancement
 
 ```typescript
-import { PromptEnhancerSDK } from '@repo/prompt-enhancer';
+import { PromptEnhancerSDK } from "@repo/prompt-enhancer";
 
 const enhancer = new PromptEnhancerSDK({
   projectPath: process.cwd(),
-  enableCodebaseContext: true
+  enableCodebaseContext: true,
 });
 
 // Simple text input
 const enhanced = await enhancer.enhance(
-  "Add process ID to logger for multithreaded tracking"
+  "Add process ID to logger for multithreaded tracking",
 );
 
 console.log(enhanced.instruction);
-// Output: "Implement process ID tracking in the application logger to enable 
+// Output: "Implement process ID tracking in the application logger to enable
 // grouped log analysis in a multithreaded Bun environment"
 ```
 
@@ -258,9 +272,9 @@ const bugPrompt = await enhancer.enhance({
   content: "Users can't login after password reset",
   type: WorkflowType.BUG,
   metadata: {
-    taskId: 'BUG-123',
-    tags: ['auth', 'critical']
-  }
+    taskId: "BUG-123",
+    tags: ["auth", "critical"],
+  },
 });
 
 // Feature development workflow
@@ -268,9 +282,9 @@ const featurePrompt = await enhancer.enhance({
   content: "Add real-time notifications",
   type: WorkflowType.FEATURE,
   metadata: {
-    author: 'john.doe',
-    tags: ['websocket', 'ui']
-  }
+    author: "john.doe",
+    tags: ["websocket", "ui"],
+  },
 });
 ```
 
@@ -296,21 +310,18 @@ bun enhance -f prompt.json --validate-only
 // Search previous prompts
 const similarPrompts = await enhancer.search({
   workflow: WorkflowType.BUG,
-  tags: ['performance'],
-  minScore: 80
+  tags: ["performance"],
+  minScore: 80,
 });
 
 // Update existing prompt
-const updated = await enhancer.update('prompt-id-123', {
-  successCriteria: [
-    ...existing.successCriteria,
-    'Performance improved by 50%'
-  ]
+const updated = await enhancer.update("prompt-id-123", {
+  successCriteria: [...existing.successCriteria, "Performance improved by 50%"],
 });
 
 // Export in different formats
-const markdown = enhancer.export(enhanced, 'markdown');
-const yaml = enhancer.export(enhanced, 'yaml');
+const markdown = enhancer.export(enhanced, "markdown");
+const yaml = enhancer.export(enhanced, "yaml");
 ```
 
 ## Testing Strategy
@@ -333,27 +344,27 @@ const yaml = enhancer.export(enhanced, 'yaml');
 ### Key Test Scenarios
 
 ```typescript
-describe('Critical Path Tests', () => {
-  test('Enhances simple prompts', async () => {
-    const result = await enhancer.enhance('Fix the bug');
+describe("Critical Path Tests", () => {
+  test("Enhances simple prompts", async () => {
+    const result = await enhancer.enhance("Fix the bug");
     expect(result.validation.isValid).toBe(true);
   });
-  
-  test('Detects workflow type', async () => {
-    const bug = await enhancer.enhance('Users report error');
+
+  test("Detects workflow type", async () => {
+    const bug = await enhancer.enhance("Users report error");
     expect(bug.workflow).toBe(WorkflowType.BUG);
   });
-  
-  test('Adds codebase context', async () => {
-    const result = await enhancer.enhance('Update logger');
+
+  test("Adds codebase context", async () => {
+    const result = await enhancer.enhance("Update logger");
     expect(result.context.relevantFiles).toContainEqual(
-      expect.objectContaining({ path: expect.stringContaining('logger') })
+      expect.objectContaining({ path: expect.stringContaining("logger") }),
     );
   });
-  
-  test('Validates and scores quality', async () => {
+
+  test("Validates and scores quality", async () => {
     const good = await enhancer.enhance(detailedPrompt);
-    const poor = await enhancer.enhance('do something');
+    const poor = await enhancer.enhance("do something");
     expect(good.validation.score).toBeGreaterThan(poor.validation.score);
   });
 });
@@ -367,16 +378,16 @@ describe('Critical Path Tests', () => {
 // apps/web/lib/prompt-enhancer/client.ts
 export function usePromptEnhancer() {
   const [enhanced, setEnhanced] = useState<StructuredPrompt>();
-  
+
   const enhance = async (raw: string) => {
-    const response = await fetch('/api/enhance-prompt', {
-      method: 'POST',
-      body: JSON.stringify({ content: raw })
+    const response = await fetch("/api/enhance-prompt", {
+      method: "POST",
+      body: JSON.stringify({ content: raw }),
     });
     const result = await response.json();
     setEnhanced(result);
   };
-  
+
   return { enhance, enhanced };
 }
 ```
@@ -385,16 +396,16 @@ export function usePromptEnhancer() {
 
 ```typescript
 // packages/workflow-engine/src/prompt-integration.ts
-import { PromptEnhancerSDK } from '@repo/prompt-enhancer';
+import { PromptEnhancerSDK } from "@repo/prompt-enhancer";
 
 export class WorkflowPromptProcessor {
   async processUserInput(input: string): Promise<WorkflowConfig> {
     const enhanced = await this.enhancer.enhance(input);
-    
+
     return {
       name: enhanced.workflow,
       steps: this.convertToSteps(enhanced),
-      context: enhanced.context
+      context: enhanced.context,
     };
   }
 }
@@ -412,9 +423,9 @@ model StoredPrompt {
   usageCount  Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   user        User     @relation(fields: [userId], references: [id])
-  
+
   @@index([userId, workflow])
   @@index([score])
 }
@@ -431,23 +442,23 @@ model StoredPrompt {
 
 ### Performance Targets
 
-| Operation | Target Time | Max Time |
-|-----------|------------|----------|
-| Simple Enhancement | < 500ms | 2s |
-| Complex Enhancement | < 2s | 5s |
-| Context Analysis | < 1s | 3s |
-| Validation | < 100ms | 500ms |
-| Storage | < 200ms | 1s |
+| Operation           | Target Time | Max Time |
+| ------------------- | ----------- | -------- |
+| Simple Enhancement  | < 500ms     | 2s       |
+| Complex Enhancement | < 2s        | 5s       |
+| Context Analysis    | < 1s        | 3s       |
+| Validation          | < 100ms     | 500ms    |
+| Storage             | < 200ms     | 1s       |
 
 ### Resource Limits
 
 ```typescript
 const LIMITS = {
-  maxPromptLength: 10000,      // characters
-  maxContextFiles: 20,         // files
-  maxContextTokens: 4000,      // tokens
+  maxPromptLength: 10000, // characters
+  maxContextFiles: 20, // files
+  maxContextTokens: 4000, // tokens
   maxConcurrentEnhancements: 5, // parallel operations
-  cacheSize: 100 * 1024 * 1024 // 100MB
+  cacheSize: 100 * 1024 * 1024, // 100MB
 };
 ```
 
@@ -458,8 +469,8 @@ const LIMITS = {
 ```typescript
 function sanitizeInput(raw: string): string {
   return raw
-    .replace(/[<>]/g, '')        // Remove HTML
-    .replace(/\$\{.*?\}/g, '')   // Remove template literals
+    .replace(/[<>]/g, "") // Remove HTML
+    .replace(/\$\{.*?\}/g, "") // Remove template literals
     .slice(0, LIMITS.maxPromptLength); // Limit length
 }
 ```
@@ -519,22 +530,28 @@ CREATE INDEX idx_stored_prompts_score ON stored_prompts(score);
 ### Common Issues
 
 #### 1. Low Quality Scores
+
 **Symptom**: Prompts consistently score below 50
-**Solution**: 
+**Solution**:
+
 - Add more context and specificity
 - Include success criteria
 - Specify expected output format
 
 #### 2. Missing Context
+
 **Symptom**: No relevant files found
 **Solution**:
+
 - Verify projectPath configuration
 - Check file permissions
 - Ensure codebase is indexed
 
 #### 3. Enhancement Timeout
+
 **Symptom**: Enhancement takes > 5 seconds
 **Solution**:
+
 - Reduce maxContextTokens
 - Enable caching
 - Check for large files in project
@@ -545,13 +562,14 @@ CREATE INDEX idx_stored_prompts_score ON stored_prompts(score);
 const enhancer = new PromptEnhancerSDK({
   projectPath: process.cwd(),
   debug: true, // Enable detailed logging
-  logLevel: 'verbose'
+  logLevel: "verbose",
 });
 ```
 
 ### Support Checklist
 
 When reporting issues, include:
+
 - [ ] SDK version
 - [ ] Node/Bun version
 - [ ] Project structure
@@ -566,26 +584,26 @@ When reporting issues, include:
 ```typescript
 function calculateScore(prompt: StructuredPrompt): number {
   let score = 0;
-  
+
   // Instruction clarity (30 points)
   if (prompt.instruction.length > 50) score += 10;
-  if (prompt.instruction.includes('specific')) score += 10;
-  if (!prompt.instruction.includes('something')) score += 10;
-  
+  if (prompt.instruction.includes("specific")) score += 10;
+  if (!prompt.instruction.includes("something")) score += 10;
+
   // Context completeness (30 points)
   if (prompt.context.relevantFiles.length > 0) score += 10;
   if (prompt.context.technicalStack.length > 0) score += 10;
   if (prompt.context.currentState) score += 10;
-  
+
   // Structure quality (20 points)
   if (prompt.successCriteria?.length > 0) score += 10;
   if (prompt.constraints?.length > 0) score += 5;
   if (prompt.examples?.length > 0) score += 5;
-  
+
   // Output specification (20 points)
   if (prompt.expectedOutput.format) score += 10;
   if (prompt.expectedOutput.structure) score += 10;
-  
+
   return Math.min(score, 100);
 }
 ```
@@ -618,21 +636,25 @@ structure:
 **Score**: 85/100
 
 ## Instruction
+
 Fix the authentication failure that occurs when users attempt to reset their password after the token expires.
 
 ## Context
-- **Affected Files**: 
+
+- **Affected Files**:
   - `/apps/web/app/api/auth/reset/route.ts`
   - `/packages/auth/src/password-reset.ts`
 - **Dependencies**: better-auth, nodemailer
 - **Current State**: Password reset tokens expire after 1 hour but UI doesn't handle expiry
 
 ## Success Criteria
+
 1. ✅ Expired tokens show clear error message
 2. ✅ Users can request new reset token
 3. ✅ All auth tests pass
 
 ## Constraints
+
 - Maintain backward compatibility
 - Follow existing auth patterns
 - Add proper error logging
@@ -641,6 +663,7 @@ Fix the authentication failure that occurs when users attempt to reset their pas
 ---
 
 **Document Metadata**
+
 - **Created**: January 2025
 - **Last Updated**: January 2025
 - **Status**: Ready for Implementation

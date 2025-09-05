@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
-import { 
+import { v4 as uuidv4 } from "uuid";
+import {
   PromptEnhancerConfigSchema,
   type PromptEnhancerConfig,
   type RawPromptInput,
@@ -12,28 +12,28 @@ import {
   type APIKeyConfig,
   RawPromptInputSchema,
   StructuredPromptSchema,
-  APIKeyConfigSchema
-} from './types.js';
-import { AIService } from './ai-service.js';
-import { PromptValidator } from './validator.js';
-import { PromptStorage } from './storage.js';
-import { ContextAnalyzer } from './context.js';
-import { WorkflowOrchestrator } from './workflow-orchestrator.js';
-import { ReferenceDiscovery } from './reference-discovery.js';
-import { AgentResolver } from './agent-resolver.js';
+  APIKeyConfigSchema,
+} from "./types.js";
+import { AIService } from "./ai-service.js";
+import { PromptValidator } from "./validator.js";
+import { PromptStorage } from "./storage.js";
+import { ContextAnalyzer } from "./context.js";
+import { WorkflowOrchestrator } from "./workflow-orchestrator.js";
+import { ReferenceDiscovery } from "./reference-discovery.js";
+import { AgentResolver } from "./agent-resolver.js";
 
 // Export all types
-export * from './types.js';
-export { AIService } from './ai-service.js';
-export { PromptValidator } from './validator.js';
-export { PromptStorage } from './storage.js';
-export { ContextAnalyzer } from './context.js';
-export { WorkflowOrchestrator } from './workflow-orchestrator.js';
-export { ReferenceDiscovery } from './reference-discovery.js';
-export { AgentResolver } from './agent-resolver.js';
-export { RuleLoader } from './rule-loader.js';
-export { MCPService } from './mcp-service.js';
-export * from './utils.js';
+export * from "./types.js";
+export { AIService } from "./ai-service.js";
+export { PromptValidator } from "./validator.js";
+export { PromptStorage } from "./storage.js";
+export { ContextAnalyzer } from "./context.js";
+export { WorkflowOrchestrator } from "./workflow-orchestrator.js";
+export { ReferenceDiscovery } from "./reference-discovery.js";
+export { AgentResolver } from "./agent-resolver.js";
+export { RuleLoader } from "./rule-loader.js";
+export { MCPService } from "./mcp-service.js";
+export * from "./utils.js";
 
 export class PromptEnhancerSDK {
   private config: PromptEnhancerConfig;
@@ -49,23 +49,30 @@ export class PromptEnhancerSDK {
     // Validate and merge config with defaults
     this.config = PromptEnhancerConfigSchema.parse({
       projectPath: config.projectPath || process.cwd(),
-      ...config
+      ...config,
     });
 
     // Initialize services
-    this.aiService = new AIService(this.config.model, this.config.apiKeys, this.config.projectPath);
+    this.aiService = new AIService(
+      this.config.model,
+      this.config.apiKeys,
+      this.config.projectPath,
+    );
     this.validator = new PromptValidator();
-    this.storage = new PromptStorage(this.config.outputDir, this.config.projectPath);
+    this.storage = new PromptStorage(
+      this.config.outputDir,
+      this.config.projectPath,
+    );
     this.contextAnalyzer = new ContextAnalyzer(this.config.projectPath);
     this.workflowOrchestrator = new WorkflowOrchestrator(
       this.config.projectPath,
-      this.config.outputDir
+      this.config.outputDir,
     );
     this.referenceDiscovery = new ReferenceDiscovery(this.config.projectPath);
     this.agentResolver = new AgentResolver(this.config.projectPath);
 
     if (this.config.debug) {
-      console.log('PromptEnhancerSDK initialized with config:', this.config);
+      console.log("PromptEnhancerSDK initialized with config:", this.config);
     }
   }
 
@@ -73,38 +80,45 @@ export class PromptEnhancerSDK {
     try {
       // Normalize input
       const rawInput = this.normalizeInput(input);
-      
+
       // Validate input
       const validated = RawPromptInputSchema.parse(rawInput);
-      
-      if (!validated.content || validated.content.trim() === '') {
-        throw new Error('Input content cannot be empty');
+
+      if (!validated.content || validated.content.trim() === "") {
+        throw new Error("Input content cannot be empty");
       }
 
       // Resolve agent mentions in the prompt
-      const agentResolution = await this.agentResolver.resolveAgentMentions(validated.content);
-      
+      const agentResolution = await this.agentResolver.resolveAgentMentions(
+        validated.content,
+      );
+
       if (this.config.debug && agentResolution.resolvedAgents.length > 0) {
-        console.log('Resolved agents:', agentResolution.resolvedAgents.map(a => a.name));
+        console.log(
+          "Resolved agents:",
+          agentResolution.resolvedAgents.map((a) => a.name),
+        );
       }
 
       // Use the processed prompt for further enhancement
       const processedValidated = {
         ...validated,
-        content: agentResolution.processedPrompt
+        content: agentResolution.processedPrompt,
       };
 
       // Get codebase context if enabled
-      let contextString = '';
+      let contextString = "";
       if (this.config.enableCodebaseContext) {
-        const context = await this.contextAnalyzer.analyze(processedValidated.content);
+        const context = await this.contextAnalyzer.analyze(
+          processedValidated.content,
+        );
         contextString = this.formatContextForAI(context);
       }
 
       // Enhance with AI
       const aiEnhancement = await this.aiService.enhancePrompt(
         processedValidated.content,
-        contextString
+        contextString,
       );
 
       // Build structured prompt
@@ -112,7 +126,7 @@ export class PromptEnhancerSDK {
         aiEnhancement,
         processedValidated,
         rawInput.metadata,
-        agentResolution
+        agentResolution,
       );
 
       // Validate the result
@@ -120,32 +134,35 @@ export class PromptEnhancerSDK {
       structured.validation = validation;
 
       if (this.config.debug) {
-        console.log('Enhancement complete:', {
+        console.log("Enhancement complete:", {
           id: structured.id,
           score: validation.score,
-          workflow: structured.workflow
+          workflow: structured.workflow,
         });
       }
 
       return structured;
     } catch (error) {
-      console.error('Enhancement failed:', error);
+      console.error("Enhancement failed:", error);
       // Return a basic structured prompt as fallback
       return this.createFallbackPrompt(input);
     }
   }
 
-  async enhanceWithSearch(input: string | RawPromptInput, searchQuery?: string): Promise<StructuredPrompt> {
+  async enhanceWithSearch(
+    input: string | RawPromptInput,
+    searchQuery?: string,
+  ): Promise<StructuredPrompt> {
     try {
       const rawInput = this.normalizeInput(input);
       const validated = RawPromptInputSchema.parse(rawInput);
-      
-      if (!validated.content || validated.content.trim() === '') {
-        throw new Error('Input content cannot be empty');
+
+      if (!validated.content || validated.content.trim() === "") {
+        throw new Error("Input content cannot be empty");
       }
 
       // Get codebase context if enabled
-      let contextString = '';
+      let contextString = "";
       if (this.config.enableCodebaseContext) {
         const context = await this.contextAnalyzer.analyze(validated.content);
         contextString = this.formatContextForAI(context);
@@ -154,14 +171,14 @@ export class PromptEnhancerSDK {
       // Enhance with AI and search grounding
       const aiEnhancement = await this.aiService.enhanceWithSearchGrounding(
         validated.content,
-        searchQuery
+        searchQuery,
       );
 
       // Build structured prompt
       const structured = await this.buildStructuredPrompt(
         aiEnhancement,
         validated,
-        rawInput.metadata
+        rawInput.metadata,
       );
 
       // Validate the result
@@ -169,46 +186,50 @@ export class PromptEnhancerSDK {
       structured.validation = validation;
 
       if (this.config.debug) {
-        console.log('Search-enhanced prompt complete:', {
+        console.log("Search-enhanced prompt complete:", {
           id: structured.id,
           score: validation.score,
-          searchUsed: true
+          searchUsed: true,
         });
       }
 
       return structured;
     } catch (error) {
-      console.error('Search enhancement failed:', error);
+      console.error("Search enhancement failed:", error);
       // Fallback to regular enhancement
       return this.enhance(input);
     }
   }
 
-  async enhanceWithWorkflow(input: string | RawPromptInput): Promise<EnhancedPromptResult> {
+  async enhanceWithWorkflow(
+    input: string | RawPromptInput,
+  ): Promise<EnhancedPromptResult> {
     try {
       // First, get the standard enhancement
       const structuredPrompt = await this.enhance(input);
-      
+
       // Get codebase context
       const rawInput = this.normalizeInput(input);
-      const context = this.config.enableCodebaseContext 
+      const context = this.config.enableCodebaseContext
         ? await this.contextAnalyzer.analyze(rawInput.content)
         : null;
 
       // Re-enhance with engineering focus
       const aiEnhancement = await this.aiService.enhancePrompt(
         rawInput.content,
-        context ? this.formatContextForAI(context) : undefined
+        context ? this.formatContextForAI(context) : undefined,
       );
 
       // Analyze complexity
-      const complexity = await this.aiService.analyzeComplexity(rawInput.content);
+      const complexity = await this.aiService.analyzeComplexity(
+        rawInput.content,
+      );
 
       // Create workflow if needed
       const workflow = await this.workflowOrchestrator.orchestrateWorkflow(
         structuredPrompt,
         aiEnhancement,
-        complexity
+        complexity,
       );
 
       // Build result
@@ -222,9 +243,9 @@ export class PromptEnhancerSDK {
           tokenCount: aiEnhancement.tokenCount || 0,
           complexity,
           agentsRequired: (workflow.agents?.length || 0) > 0,
-          contextFilesUsed: workflow.contextFiles
+          contextFilesUsed: workflow.contextFiles,
         },
-        outputFile: workflow.results?.outputPath || ''
+        outputFile: workflow.results?.outputPath || "",
       };
 
       // Store the result
@@ -234,7 +255,7 @@ export class PromptEnhancerSDK {
 
       return result;
     } catch (error) {
-      console.error('Workflow enhancement failed:', error);
+      console.error("Workflow enhancement failed:", error);
       throw error;
     }
   }
@@ -251,7 +272,10 @@ export class PromptEnhancerSDK {
     return this.storage.search(query);
   }
 
-  async update(id: string, updates: Partial<StructuredPrompt>): Promise<StructuredPrompt> {
+  async update(
+    id: string,
+    updates: Partial<StructuredPrompt>,
+  ): Promise<StructuredPrompt> {
     const existing = await this.retrieve(id);
     if (!existing) {
       throw new Error(`Prompt not found: ${id}`);
@@ -262,16 +286,16 @@ export class PromptEnhancerSDK {
       ...updates,
       metadata: {
         ...existing.metadata,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     };
 
     // Re-validate
     updated.validation = this.validator.validate(updated);
-    
+
     // Save
     await this.storage.save(updated);
-    
+
     return updated;
   }
 
@@ -294,7 +318,7 @@ export class PromptEnhancerSDK {
   async isReady(): Promise<boolean> {
     // Check if AI service is available
     try {
-      const testPrompt = 'Test connectivity';
+      const testPrompt = "Test connectivity";
       await this.aiService.analyzeComplexity(testPrompt);
       return true;
     } catch {
@@ -302,147 +326,166 @@ export class PromptEnhancerSDK {
     }
   }
 
-  export(prompt: StructuredPrompt, format: 'json' | 'yaml' | 'markdown' = 'json'): string {
+  export(
+    prompt: StructuredPrompt,
+    format: "json" | "yaml" | "markdown" = "json",
+  ): string {
     switch (format) {
-      case 'json':
+      case "json":
         return JSON.stringify(prompt, null, 2);
-      
-      case 'yaml':
+
+      case "yaml":
         return this.exportToYaml(prompt);
-      
-      case 'markdown':
+
+      case "markdown":
         return this.exportToMarkdown(prompt);
-      
+
       default:
         throw new Error(`Unsupported export format: ${format}`);
     }
   }
 
   private normalizeInput(input: string | RawPromptInput): RawPromptInput {
-    if (typeof input === 'string') {
+    if (typeof input === "string") {
       return {
         content: input,
         type: undefined,
         metadata: {
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       };
     }
     return {
       ...input,
       metadata: {
         ...input.metadata,
-        timestamp: input.metadata?.timestamp || new Date()
-      }
+        timestamp: input.metadata?.timestamp || new Date(),
+      },
     };
   }
 
   private async buildStructuredPrompt(
     aiEnhancement: AIEnhancement,
     rawInput: RawPromptInput,
-    metadata?: RawPromptInput['metadata'],
-    agentResolution?: any
+    metadata?: RawPromptInput["metadata"],
+    agentResolution?: any,
   ): Promise<StructuredPrompt> {
     const now = new Date();
-    
+
     // Discover references
-    const discoveredReferences = await this.referenceDiscovery.discoverReferences(rawInput.content);
-    const validatedReferences = await this.referenceDiscovery.validateReferences(discoveredReferences);
-    
+    const discoveredReferences =
+      await this.referenceDiscovery.discoverReferences(rawInput.content);
+    const validatedReferences =
+      await this.referenceDiscovery.validateReferences(discoveredReferences);
+
     return {
       id: uuidv4(),
-      version: '1.0.0',
+      version: "1.0.0",
       workflow: aiEnhancement.workflowType,
       instruction: aiEnhancement.instruction,
       context: {
-        projectOverview: 'AI Dr. workflow orchestration system',
-        relevantFiles: aiEnhancement.context.relevantFiles.map(path => ({
+        projectOverview: "AI Dr. workflow orchestration system",
+        relevantFiles: aiEnhancement.context.relevantFiles.map((path) => ({
           path,
-          summary: `File: ${path}`
+          summary: `File: ${path}`,
         })),
         dependencies: aiEnhancement.context.dependencies,
-        currentState: '',
-        technicalStack: aiEnhancement.context.technicalStack
+        currentState: "",
+        technicalStack: aiEnhancement.context.technicalStack,
       },
-      inputs: [{
-        label: 'Original Prompt',
-        value: rawInput.content,
-        type: 'text'
-      }],
+      inputs: [
+        {
+          label: "Original Prompt",
+          value: rawInput.content,
+          type: "text",
+        },
+      ],
       expectedOutput: {
         format: this.getOutputFormat(aiEnhancement.workflowType),
-        structure: this.getOutputStructure(aiEnhancement.workflowType)
+        structure: this.getOutputStructure(aiEnhancement.workflowType),
       },
       validation: {
         isValid: true,
         score: aiEnhancement.confidenceScore,
         issues: [],
-        suggestions: []
+        suggestions: [],
       },
       metadata: {
         createdAt: now,
         updatedAt: now,
         author: metadata?.author,
-        tags: metadata?.tags
+        tags: metadata?.tags,
       },
       clarifyingQuestions: aiEnhancement.clarifyingQuestions,
       successCriteria: aiEnhancement.successCriteria,
       constraints: aiEnhancement.constraints,
       // New sections
-      discoveredReferences: validatedReferences.length > 0 ? validatedReferences : undefined,
+      discoveredReferences:
+        validatedReferences.length > 0 ? validatedReferences : undefined,
       handOffGuidance: undefined, // Will be populated by AI in future enhancement
-      openQuestions: undefined, // Will be populated by AI in future enhancement  
+      openQuestions: undefined, // Will be populated by AI in future enhancement
       constraintsAndNonGoals: undefined, // Will be populated by AI in future enhancement
-      agentResolution: agentResolution || undefined
+      agentResolution: agentResolution || undefined,
     };
   }
 
-  private createFallbackPrompt(input: string | RawPromptInput): StructuredPrompt {
+  private createFallbackPrompt(
+    input: string | RawPromptInput,
+  ): StructuredPrompt {
     const normalized = this.normalizeInput(input);
     const now = new Date();
-    
+
     return {
       id: uuidv4(),
-      version: '1.0.0',
-      workflow: 'general',
+      version: "1.0.0",
+      workflow: "general",
       instruction: normalized.content,
       context: {
-        projectOverview: '',
+        projectOverview: "",
         relevantFiles: [],
         dependencies: [],
-        currentState: '',
-        technicalStack: []
+        currentState: "",
+        technicalStack: [],
       },
-      inputs: [{
-        label: 'Original Input',
-        value: normalized.content,
-        type: 'text'
-      }],
+      inputs: [
+        {
+          label: "Original Input",
+          value: normalized.content,
+          type: "text",
+        },
+      ],
       expectedOutput: {
-        format: 'structured_data'
+        format: "structured_data",
       },
       validation: {
         isValid: false,
         score: 0,
-        issues: [{
-          severity: 'error',
-          field: 'enhancement',
-          message: 'Failed to enhance prompt'
-        }],
-        suggestions: ['Try rephrasing your prompt', 'Add more specific details']
+        issues: [
+          {
+            severity: "error",
+            field: "enhancement",
+            message: "Failed to enhance prompt",
+          },
+        ],
+        suggestions: [
+          "Try rephrasing your prompt",
+          "Add more specific details",
+        ],
       },
       metadata: {
         createdAt: now,
-        updatedAt: now
-      }
+        updatedAt: now,
+      },
     };
   }
 
   private formatContextForAI(context: any): string {
     let contextString = `Project Context:
 - Files: ${context.files?.length || 0} relevant files found
-- Dependencies: ${Object.keys(context.dependencies || {}).slice(0, 10).join(', ')}
-- Tech Stack: ${context.technicalStack?.join(', ') || 'TypeScript, Bun'}`;
+- Dependencies: ${Object.keys(context.dependencies || {})
+      .slice(0, 10)
+      .join(", ")}
+- Tech Stack: ${context.technicalStack?.join(", ") || "TypeScript, Bun"}`;
 
     // Include project rules and agent instructions
     if (context.agentInstructions) {
@@ -466,30 +509,35 @@ ${context.projectRules}`;
     return contextString;
   }
 
-  private getOutputFormat(workflowType: string): StructuredPrompt['expectedOutput']['format'] {
-    const formats: Record<string, StructuredPrompt['expectedOutput']['format']> = {
-      bug: 'code',
-      feature: 'code',
-      refactor: 'code',
-      documentation: 'documentation',
-      research: 'analysis',
-      pr_review: 'analysis',
-      general: 'structured_data'
+  private getOutputFormat(
+    workflowType: string,
+  ): StructuredPrompt["expectedOutput"]["format"] {
+    const formats: Record<
+      string,
+      StructuredPrompt["expectedOutput"]["format"]
+    > = {
+      bug: "code",
+      feature: "code",
+      refactor: "code",
+      documentation: "documentation",
+      research: "analysis",
+      pr_review: "analysis",
+      general: "structured_data",
     };
-    return formats[workflowType] || 'structured_data';
+    return formats[workflowType] || "structured_data";
   }
 
   private getOutputStructure(workflowType: string): string {
     const structures: Record<string, string> = {
-      bug: 'Fixed code with error handling',
-      feature: 'Implementation with tests',
-      refactor: 'Improved code structure',
-      documentation: 'Markdown documentation',
-      research: 'Analysis with recommendations',
-      pr_review: 'Review feedback',
-      general: 'Appropriate format for task'
+      bug: "Fixed code with error handling",
+      feature: "Implementation with tests",
+      refactor: "Improved code structure",
+      documentation: "Markdown documentation",
+      research: "Analysis with recommendations",
+      pr_review: "Review feedback",
+      general: "Appropriate format for task",
     };
-    return structures[workflowType] || 'Structured output';
+    return structures[workflowType] || "Structured output";
   }
 
   private exportToYaml(prompt: StructuredPrompt): string {
@@ -499,66 +547,66 @@ ${context.projectRules}`;
       `version: ${prompt.version}`,
       `workflow: ${prompt.workflow}`,
       `score: ${prompt.validation.score}`,
-      '',
-      'instruction: |',
-      ...prompt.instruction.split('\n').map(line => `  ${line}`),
-      ''
+      "",
+      "instruction: |",
+      ...prompt.instruction.split("\n").map((line) => `  ${line}`),
+      "",
     ];
 
     if (prompt.successCriteria?.length) {
-      lines.push('successCriteria:');
-      prompt.successCriteria.forEach(criteria => {
+      lines.push("successCriteria:");
+      prompt.successCriteria.forEach((criteria) => {
         lines.push(`  - ${criteria}`);
       });
     }
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 
   private exportToMarkdown(prompt: StructuredPrompt): string {
     const sections = [
       `# Enhanced Prompt`,
-      '',
+      "",
       `**ID**: ${prompt.id}`,
       `**Workflow**: ${prompt.workflow}`,
       `**Score**: ${prompt.validation.score}/100`,
-      '',
-      '## Instruction',
+      "",
+      "## Instruction",
       prompt.instruction,
-      ''
+      "",
     ];
 
     if (prompt.context.relevantFiles.length > 0) {
-      sections.push('## Relevant Files');
-      prompt.context.relevantFiles.forEach(file => {
+      sections.push("## Relevant Files");
+      prompt.context.relevantFiles.forEach((file) => {
         sections.push(`- \`${file.path}\`: ${file.summary}`);
       });
-      sections.push('');
+      sections.push("");
     }
 
     if (prompt.successCriteria?.length) {
-      sections.push('## Success Criteria');
+      sections.push("## Success Criteria");
       prompt.successCriteria.forEach((criteria, i) => {
         sections.push(`${i + 1}. ✅ ${criteria}`);
       });
-      sections.push('');
+      sections.push("");
     }
 
     if (prompt.constraints?.length) {
-      sections.push('## Constraints');
-      prompt.constraints.forEach(constraint => {
+      sections.push("## Constraints");
+      prompt.constraints.forEach((constraint) => {
         sections.push(`- ${constraint}`);
       });
-      sections.push('');
+      sections.push("");
     }
 
     if (prompt.clarifyingQuestions?.length) {
-      sections.push('## Clarifying Questions');
+      sections.push("## Clarifying Questions");
       prompt.clarifyingQuestions.forEach((question, i) => {
         sections.push(`${i + 1}. ${question}`);
       });
     }
 
-    return sections.join('\n');
+    return sections.join("\n");
   }
 }

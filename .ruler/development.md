@@ -13,9 +13,10 @@
 ## Standard Development Sequence
 
 After ANY changes, run this sequence:
+
 ```bash
 bun dev          # 1. Test integration (Turborepo)
-bun typecheck    # 2. Verify types  
+bun typecheck    # 2. Verify types
 bun test         # 3. Run unit tests
 bun lint         # 4. Check code quality
 ```
@@ -37,14 +38,13 @@ bun run db:seed            # Seed database
 
 ## Development Rules
 
-1. **Check command output** - even if you see what you want, address any other issues that appear. Clear up issues related to your changes. 
+1. **Check command output** - even if you see what you want, address any other issues that appear. Clear up issues related to your changes.
 2. **Use playwright mcp to view web page for errors.** Test the changes in the browser.
 3. **Keep commands in root package.json** for ease of use
 4. **Always keep commands in root package.json file** for ease of use
 
-
 ## Reproducible Setup
 
 1. Always provide setup scripts in `/scripts` directory
-2. Document all environment variables in `.env.example`  
+2. Document all environment variables in `.env.example`
 3. Use configuration detection to find system dependencies

@@ -1,5 +1,5 @@
-import { readFileSync, readdirSync, existsSync } from 'fs';
-import { join, basename } from 'path';
+import { readFileSync, readdirSync, existsSync } from "fs";
+import { join, basename } from "path";
 
 export interface ProjectRule {
   source: string;
@@ -23,7 +23,7 @@ export class RuleLoader {
   private cacheDuration: number = 60000; // 1 minute cache
 
   constructor(projectPath: string = process.cwd()) {
-    this.rulerPath = join(projectPath, '.ruler');
+    this.rulerPath = join(projectPath, ".ruler");
   }
 
   /**
@@ -33,9 +33,13 @@ export class RuleLoader {
    */
   async loadRules(forceReload = false): Promise<LoadedRules> {
     const now = Date.now();
-    
+
     // Return cached rules if still valid
-    if (!forceReload && this.cachedRules && (now - this.cacheTimestamp) < this.cacheDuration) {
+    if (
+      !forceReload &&
+      this.cachedRules &&
+      now - this.cacheTimestamp < this.cacheDuration
+    ) {
       return this.cachedRules;
     }
 
@@ -44,28 +48,27 @@ export class RuleLoader {
       console.warn(`⚠️  .ruler directory not found at ${this.rulerPath}`);
       return {
         rules: [],
-        rulesText: '',
-        count: 0
+        rulesText: "",
+        count: 0,
       };
     }
 
-
     const rules: ProjectRule[] = [];
-    
+
     try {
       // Read all .md and .json files from .ruler directory
       const files = readdirSync(this.rulerPath)
-        .filter(file => file.endsWith('.md') || file.endsWith('.json'))
+        .filter((file) => file.endsWith(".md") || file.endsWith(".json"))
         .sort(); // Sort for consistent ordering
 
       for (const file of files) {
         const filePath = join(this.rulerPath, file);
         try {
-          const content = readFileSync(filePath, 'utf-8');
+          const content = readFileSync(filePath, "utf-8");
           rules.push({
             source: `.ruler/${file}`,
-            fileName: basename(file, file.endsWith('.md') ? '.md' : '.json'),
-            content: content.trim()
+            fileName: basename(file, file.endsWith(".md") ? ".md" : ".json"),
+            content: content.trim(),
           });
         } catch (error) {
           console.error(`Error reading rule file ${filePath}:`, error);
@@ -78,17 +81,17 @@ export class RuleLoader {
       this.cachedRules = {
         rules,
         rulesText,
-        count: rules.length
+        count: rules.length,
       };
       this.cacheTimestamp = now;
 
       return this.cachedRules;
     } catch (error) {
-      console.error('Error loading rules:', error);
+      console.error("Error loading rules:", error);
       return {
         rules: [],
-        rulesText: '',
-        count: 0
+        rulesText: "",
+        count: 0,
       };
     }
   }
@@ -97,22 +100,22 @@ export class RuleLoader {
    * Format rules as structured text for inclusion in prompts
    */
   private formatRulesAsText(rules: ProjectRule[]): string {
-    if (rules.length === 0) return '';
+    if (rules.length === 0) return "";
 
     const sections: string[] = [
-      '### PROJECT RULES AND STANDARDS (MUST BE FOLLOWED)',
-      ''
+      "### PROJECT RULES AND STANDARDS (MUST BE FOLLOWED)",
+      "",
     ];
 
     for (const rule of rules) {
-      sections.push('---');
+      sections.push("---");
       sections.push(`#### Source: ${rule.source}`);
-      sections.push('---');
+      sections.push("---");
       sections.push(rule.content);
-      sections.push('');
+      sections.push("");
     }
 
-    return sections.join('\n');
+    return sections.join("\n");
   }
 
   /**
@@ -120,7 +123,7 @@ export class RuleLoader {
    */
   async getRule(fileName: string): Promise<ProjectRule | null> {
     const rules = await this.loadRules();
-    return rules.rules.find(r => r.fileName === fileName) || null;
+    return rules.rules.find((r) => r.fileName === fileName) || null;
   }
 
   /**

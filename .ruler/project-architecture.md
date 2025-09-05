@@ -23,8 +23,9 @@ packages/
 ## Documentation Requirements
 
 Every package must include:
+
 - **README.md** - Purpose, usage, API
-- **Type definitions** - Complete interfaces  
+- **Type definitions** - Complete interfaces
 - **Code comments** - Why, not what
 - **Test coverage** - Unit and integration
 

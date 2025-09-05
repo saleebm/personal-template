@@ -7,14 +7,14 @@ Claude Code sub-agents are specialized AI assistants with independent context wi
 Every Claude Code sub-agent follows a standardized Markdown file format with YAML frontmatter. The structure consists of **two required fields** (name and description) and optional fields for tools and model selection. Sub-agents are stored as `.md` files in either `.claude/agents/` for project-specific agents or `~/.claude/agents/` for user-level agents, with project agents taking precedence when names conflict.
 
 The basic structure requires precise formatting:
+
 ```yaml
 ---
 name: principal-engineer
 description: High-level architecture decisions and technical leadership
-tools: Read, Grep, Glob, Bash, WebSearch  # Optional - inherits all if omitted
-model: opus  # Optional - defaults to sonnet
+tools: Read, Grep, Glob, Bash, WebSearch # Optional - inherits all if omitted
+model: opus # Optional - defaults to sonnet
 ---
-
 System prompt content follows here...
 ```
 
@@ -53,6 +53,7 @@ You are a Principal Engineer with deep expertise in system architecture, technic
 ## Decision Framework
 
 When analyzing any technical challenge:
+
 1. Evaluate system-wide implications and dependencies
 2. Consider long-term maintainability and evolution
 3. Balance technical excellence with business pragmatism
@@ -68,6 +69,7 @@ When analyzing any technical challenge:
 ## Output Standards
 
 Provide analysis with:
+
 - Executive summary of key findings
 - Detailed technical assessment with evidence
 - Clear, prioritized recommendations
