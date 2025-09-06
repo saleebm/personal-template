@@ -227,7 +227,7 @@ jobs:
           echo "::group::Building Packages"
           START_TIME=$(date +%s)
           
-          if ! bun build; then
+          if ! bun run build; then
             echo "::error::Build failed"
             echo "### ❌ Build Failed" >> $GITHUB_STEP_SUMMARY
             exit 1

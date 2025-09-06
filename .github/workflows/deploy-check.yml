@@ -256,7 +256,7 @@ jobs:
           DATABASE_URL: "postgresql://test:test@localhost:5432/test_db"
 
       - name: Build production bundles
-        run: bun build
+        run: bun run build
         env:
           NODE_ENV: production
           DATABASE_URL: "postgresql://test:test@localhost:5432/test_db"
@@ -268,7 +268,7 @@ jobs:
           
           # Measure build time
           START_TIME=$(date +%s)
-          DATABASE_URL="postgresql://test:test@localhost:5432/test_db" bun build
+          DATABASE_URL="postgresql://test:test@localhost:5432/test_db" bun run build
           END_TIME=$(date +%s)
           BUILD_TIME=$((END_TIME - START_TIME))
           
