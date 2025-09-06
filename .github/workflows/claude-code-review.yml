@@ -2,7 +2,7 @@ name: Claude Code Review
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, ready_for_review, reopened]
     paths-ignore:
       - '.ai-dr/**'
       - 'musings/**'
@@ -16,9 +16,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-      issues: read
       id-token: write
-      actions: read
     
     steps:
       - name: Checkout repository
@@ -35,88 +33,144 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run Quality Checks
+        id: quality-checks
+        continue-on-error: true
         run: |
           echo "🔍 Running automated code quality checks..."
+          
+          CHECKS_PASSED=true
           
           echo "📋 TypeScript Check:"
           if bun run typecheck; then
             echo "✅ TypeScript check passed"
+            echo "typecheck=✅" >> $GITHUB_OUTPUT
           else
             echo "❌ TypeScript errors found"
+            echo "typecheck=❌" >> $GITHUB_OUTPUT
+            CHECKS_PASSED=false
           fi
           
           echo "🔧 Linting:"
           if bun run lint; then
             echo "✅ Linting passed"
+            echo "lint=✅" >> $GITHUB_OUTPUT
           else
             echo "❌ Linting issues found"
+            echo "lint=❌" >> $GITHUB_OUTPUT
+            CHECKS_PASSED=false
           fi
           
           echo "🧪 Tests:"
           if bun run test; then
             echo "✅ Tests passed"
+            echo "test=✅" >> $GITHUB_OUTPUT
           else
             echo "❌ Tests failed"
+            echo "test=❌" >> $GITHUB_OUTPUT
+            CHECKS_PASSED=false
           fi
           
           echo "📦 Build check:"
           if bun run build; then
             echo "✅ Build successful"
+            echo "build=✅" >> $GITHUB_OUTPUT
           else
             echo "❌ Build failed"
+            echo "build=❌" >> $GITHUB_OUTPUT
+            CHECKS_PASSED=false
+          fi
+          
+          if [ "$CHECKS_PASSED" = "false" ]; then
+            exit 1
           fi
 
-      - name: Add Code Review Comment
-        uses: actions/github-script@v7
+      - name: Claude AI Code Review
+        uses: anthropics/claude-code-action@v1
         with:
-          script: |
-            const fs = require('fs');
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          
+          # Enable progress tracking for visual feedback
+          track_progress: true
+          
+          # Comprehensive review prompt tailored to the monorepo
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            PR TITLE: ${{ github.event.pull_request.title }}
             
-            const reviewTemplate = `## 🤖 Automated Code Review
+            Quality Check Results:
+            - TypeScript: ${{ steps.quality-checks.outputs.typecheck || '⏳' }}
+            - Linting: ${{ steps.quality-checks.outputs.lint || '⏳' }}
+            - Tests: ${{ steps.quality-checks.outputs.test || '⏳' }}
+            - Build: ${{ steps.quality-checks.outputs.build || '⏳' }}
             
-            ### Quality Checks Summary
-            This automated review has run the following checks:
+            Perform a comprehensive code review for this Bun monorepo PR with focus on:
             
-            | Check | Status |
-            |-------|--------|
-            | TypeScript | ⏳ See logs above |
-            | ESLint | ⏳ See logs above |  
-            | Tests | ⏳ See logs above |
-            | Build | ⏳ See logs above |
+            ## 1. **Monorepo Structure & Organization**
+               - Verify files are in appropriate packages (not in root)
+               - Check package boundaries and dependencies
+               - Validate Turborepo configuration if changed
+               - Ensure proper workspace imports (@workspace/*)
+               
+            ## 2. **TypeScript & Code Quality**
+               - NO `any` types allowed - suggest `unknown` or proper types
+               - Verify strict mode compliance
+               - Check for proper type exports and imports
+               - Validate absolute imports usage
+               - Ensure kebab-case naming for files/directories
+               - Review function patterns (inline interfaces preferred)
+               
+            ## 3. **Bun-Specific Patterns**
+               - Verify Bun commands used instead of npm/node
+               - Check for proper .env handling (no dotenv needed)
+               - Validate test patterns using Bun test runner
+               - Review build configurations
+               
+            ## 4. **Security & Best Practices**
+               - Check for hardcoded secrets or credentials
+               - Verify proper environment variable usage (NEXT_PUBLIC_* for client)
+               - Review input validation and sanitization
+               - Check error handling patterns
+               - Validate path security (prevent directory traversal)
+               
+            ## 5. **Performance Considerations**
+               - Review database queries (if using Prisma)
+               - Check for efficient imports and code splitting
+               - Identify potential memory leaks
+               - Review bundle size impacts
+               
+            ## 6. **Testing Coverage**
+               - Verify tests for new functionality
+               - Check test quality and edge cases
+               - Review mock usage (testing only, never production)
+               - Validate test isolation with cleanupTestDb()
+               
+            ## 7. **Documentation**
+               - Ensure README updates for new features
+               - Check inline documentation quality
+               - Verify CLAUDE.md updates if agent behavior changes
+               - Review API documentation if endpoints added
+               
+            ## 8. **Database Changes (if applicable)**
+               - Review Prisma schema changes
+               - Check migration naming and quality
+               - Validate seed data updates
+               
+            ## Style Guidelines to Enforce:
+               - Single Responsibility Principle for files
+               - Explicit exports (no barrel files)
+               - Proper error messages with installation instructions
+               - Comments explain "why" not "what"
+               
+            Provide:
+            - Inline comments for specific code issues
+            - General observations as top-level comments
+            - Constructive feedback with suggested improvements
+            - Recognition of good patterns and practices
             
-            ### 📋 Review Guidelines
-            Please ensure your PR follows these standards:
-            
-            #### Code Quality & Standards
-            - ✅ TypeScript strict mode enabled
-            - ✅ No \`any\` types used
-            - ✅ Kebab-case for files/directories
-            - ✅ Absolute imports for workspace packages
-            - ✅ Explicit exports
-            
-            #### Monorepo Structure  
-            - ✅ Files in appropriate packages (not root)
-            - ✅ Package dependencies properly declared
-            - ✅ Turborepo configuration maintained
-            
-            #### Security & Performance
-            - ✅ No hardcoded secrets
-            - ✅ Environment variables used properly
-            - ✅ Input validation implemented
-            - ✅ Error handling included
-            
-            #### Testing & Documentation
-            - ✅ Tests included for new functionality
-            - ✅ Documentation updated
-            - ✅ README files current
-            
-            > **Note:** This is an automated review. Manual review by maintainers may still be required.
-            `;
-            
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: reviewTemplate
-            });
+            Focus on actionable feedback that improves code quality, security, and maintainability.
+          
+          # Tools for comprehensive PR review
+          claude_args: |
+            --allowed-tools "Read,Edit,Bash,Grep,WebSearch"
 

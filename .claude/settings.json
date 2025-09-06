@@ -6,7 +6,8 @@
       "FileRead(*)",
       "LS",
       "Grep",
-      "Glob"
+      "Glob",
+      "WebFetch"
     ],
     "ask": [
       "Bash(git reset:*)",
@@ -20,8 +21,7 @@
       "Bash(rm:*)",
       "Bash(curl:*)",
       "Read(./.env)",
-      "Read(`**/*/.env.*)`",
-      "WebFetch"
+      "Read(`**/*/.env.*)`"
     ],
     "additionalDirectories": [
       "/Users/minasaleeb/workspaces/me/copt-dev-v1",
