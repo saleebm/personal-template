@@ -76,8 +76,11 @@ jobs:
           fi
           echo "::endgroup::"
           
-          # Add node_modules/.bin to PATH for direct command access
+      - name: Setup PATH for installed binaries
+        run: |
+          # Add node_modules/.bin to PATH for all subsequent steps
           echo "$GITHUB_WORKSPACE/node_modules/.bin" >> $GITHUB_PATH
+          echo "PATH=$GITHUB_WORKSPACE/node_modules/.bin:$PATH" >> $GITHUB_ENV
 
       # Generate Prisma client before running checks
       - name: Generate Prisma Client
@@ -250,10 +253,13 @@ jobs:
           bun-version: 1.2.21
 
       - name: Install dependencies
+        run: bun install --frozen-lockfile
+          
+      - name: Setup PATH for installed binaries
         run: |
-          bun install --frozen-lockfile
-          # Add node_modules/.bin to PATH for direct command access
+          # Add node_modules/.bin to PATH for all subsequent steps
           echo "$GITHUB_WORKSPACE/node_modules/.bin" >> $GITHUB_PATH
+          echo "PATH=$GITHUB_WORKSPACE/node_modules/.bin:$PATH" >> $GITHUB_ENV
 
       # Generate Prisma client for build
       - name: Generate Prisma Client
