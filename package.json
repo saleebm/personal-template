@@ -21,7 +21,14 @@
     "db:format": "cd packages/database && bun run db:format",
     "enhance": "bun run packages/prompt-enhancer/scripts/enhance-prompt.ts",
     "enhance:workflow": "bun run packages/prompt-enhancer/scripts/enhance-prompt.ts --workflow",
-    "enhance:help": "bun run packages/prompt-enhancer/scripts/enhance-prompt.ts --help"
+    "enhance:help": "bun run packages/prompt-enhancer/scripts/enhance-prompt.ts --help",
+    "workflow": "./scripts/workflow-manager.sh",
+    "workflow:status": "./scripts/workflow-manager.sh status",
+    "workflow:runs": "./scripts/workflow-manager.sh runs",
+    "workflow:failures": "./scripts/workflow-manager.sh failures",
+    "workflow:metrics": "./scripts/workflow-manager.sh metrics",
+    "workflow:cache": "./scripts/workflow-manager.sh cache",
+    "workflow:help": "./scripts/workflow-manager.sh help"
   },
   "devDependencies": {
     "@intellectronica/ruler": "^0.3.6",

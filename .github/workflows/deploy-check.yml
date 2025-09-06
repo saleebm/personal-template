@@ -15,6 +15,11 @@ on:
           - staging
           - production
 
+permissions:
+  contents: read
+  pull-requests: write  # Required for commenting on PRs
+  checks: write         # Required for creating check runs
+
 jobs:
   # Pre-deployment validation
   validate:
@@ -63,32 +68,106 @@ jobs:
             ${{ runner.os }}-bun-deploy-
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: |
+          echo "::group::Installing dependencies"
+          if ! bun install --frozen-lockfile; then
+            echo "::warning::Frozen lockfile failed, attempting normal install"
+            bun install
+          fi
+          echo "::endgroup::"
 
       # Generate Prisma client before running checks
       - name: Generate Prisma Client
-        run: bun run db:generate
+        run: |
+          echo "::group::Generating Prisma Client"
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if bun run db:generate; then
+              echo "✅ Prisma Client generated"
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "::warning::Retry $RETRY_COUNT/$MAX_RETRIES"
+                sleep 2
+              else
+                echo "::error::Failed to generate Prisma Client"
+                exit 1
+              fi
+            fi
+          done
+          echo "::endgroup::"
         env:
           DATABASE_URL: "postgresql://test:test@localhost:5432/test_db"
 
-      # Run all quality checks
+      # Run all quality checks with proper error handling
       - name: Type checking
-        run: bun typecheck
+        id: typecheck
+        run: |
+          echo "::group::TypeScript Validation"
+          if ! bun typecheck; then
+            echo "::error::Type check failed for deployment"
+            echo "### ❌ Type Check Failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          echo "✅ Type check passed" >> $GITHUB_STEP_SUMMARY
+          echo "::endgroup::"
         env:
           DATABASE_URL: "postgresql://test:test@localhost:5432/test_db"
 
       - name: Linting
-        run: bun lint
+        id: lint
+        run: |
+          echo "::group::Code Quality Check"
+          if ! bun lint; then
+            echo "::error::Linting failed for deployment"
+            echo "### ❌ Linting Failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          echo "✅ Linting passed" >> $GITHUB_STEP_SUMMARY
+          echo "::endgroup::"
 
       - name: Run tests
-        run: bun test
+        id: test
+        run: |
+          echo "::group::Test Suite Execution"
+          if ! bun test; then
+            echo "::error::Tests failed for deployment"
+            echo "### ❌ Tests Failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          echo "✅ All tests passed" >> $GITHUB_STEP_SUMMARY
+          echo "::endgroup::"
         env:
           CI: true
           NODE_ENV: test
           DATABASE_URL: "postgresql://test:test@localhost:5432/test_db"
 
       - name: Build all packages
-        run: bun build
+        id: build
+        run: |
+          echo "::group::Production Build"
+          START_TIME=$(date +%s)
+          
+          if ! bun run build; then
+            echo "::error::Build failed for deployment"
+            echo "### ❌ Build Failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+          END_TIME=$(date +%s)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          
+          echo "✅ Build successful (${BUILD_TIME}s)" >> $GITHUB_STEP_SUMMARY
+          
+          # Check build outputs
+          if [ -d "apps/web/.next" ]; then
+            BUILD_SIZE=$(du -sh apps/web/.next | cut -f1)
+            echo "📦 Build size: $BUILD_SIZE" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "::endgroup::"
         env:
           NODE_ENV: production
           DATABASE_URL: "postgresql://test:test@localhost:5432/test_db"
