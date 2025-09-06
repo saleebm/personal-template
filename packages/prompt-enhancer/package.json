@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit",
     "build": "bunchee",
     "prepublishOnly": "bun run build",
-    "lint": "bunx eslint src --ext .ts,.tsx"
+    "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.11",

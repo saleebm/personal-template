@@ -145,6 +145,9 @@ jobs:
             echo "::warning::Dependencies installed without frozen lockfile. Please update bun.lock"
           fi
           echo "::endgroup::"
+          
+          # Add node_modules/.bin to PATH for direct command access
+          echo "$GITHUB_WORKSPACE/node_modules/.bin" >> $GITHUB_PATH
 
       # Generate Prisma client before running checks
       - name: Generate Prisma Client
